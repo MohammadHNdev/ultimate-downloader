@@ -40,17 +40,13 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "resources": ["resources/*"],
+    "resources": {
+      "resources/*": "./"
+    },
     "windows": {
       "certificateThumbprint": null,
       "digestAlgorithm": "sha256",
-      "timestampUrl": "",
-      "nsis": {
-        "displayLanguageSelector": false,
-        "installerIcon": "icons/icon.ico",
-        "languages": ["English"],
-        "shortcutName": "Ultimate Downloader"
-      }
+      "timestampUrl": ""
     }
   },
   "plugins": {
