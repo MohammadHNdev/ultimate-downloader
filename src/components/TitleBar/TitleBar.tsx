@@ -1,4 +1,4 @@
-import { Text } from '@fluentui/react-components';
+import { Text, tokens } from '@fluentui/react-components';
 import {
   Subtract20Regular,
   Square20Regular,
@@ -13,8 +13,6 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'space-between',
     height: '40px',
-    backgroundColor: '#0A0B14',
-    borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
     paddingLeft: '16px',
     paddingRight: '0',
     userSelect: 'none' as const,
@@ -41,27 +39,9 @@ const styles = {
     justifyContent: 'center',
     fontSize: '14px',
   },
-  title: {
-    fontSize: '13px',
-    fontWeight: 600,
-    color: 'rgba(255, 255, 255, 0.9)',
-    letterSpacing: '0.3px',
-  },
   controls: {
     display: 'flex',
     height: '100%',
-  },
-  controlButton: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '46px',
-    height: '100%',
-    border: 'none',
-    background: 'transparent',
-    color: 'rgba(255, 255, 255, 0.7)',
-    cursor: 'pointer',
-    transition: 'all 0.15s ease',
   },
 };
 
@@ -88,7 +68,11 @@ export default function TitleBar() {
   };
 
   return (
-    <div style={styles.root}>
+    <div style={{
+      ...styles.root,
+      backgroundColor: tokens.colorNeutralBackground1,
+      borderBottom: `1px solid ${tokens.colorNeutralStroke2}`,
+    }}>
       <div style={styles.dragRegion} data-tauri-drag-region>
         <div style={styles.logo}>
           <motion.div
@@ -98,29 +82,64 @@ export default function TitleBar() {
           >
             <ArrowDownload24Filled style={{ fontSize: '16px' }} />
           </motion.div>
-          <Text style={styles.title}>Ultimate Downloader</Text>
+          <Text style={{ fontSize: '13px', fontWeight: 600, color: tokens.colorNeutralForeground1, letterSpacing: '0.3px' }}>
+            Ultimate Downloader
+          </Text>
         </div>
       </div>
 
       <div style={styles.controls}>
         <motion.button
-          style={styles.controlButton}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '46px',
+            height: '100%',
+            border: 'none',
+            background: 'transparent',
+            color: tokens.colorNeutralForeground2,
+            cursor: 'pointer',
+            transition: 'all 0.15s ease',
+          }}
           onClick={handleMinimize}
-          whileHover={{ scale: 1.05, backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
+          whileHover={{ scale: 1.05, backgroundColor: tokens.colorNeutralBackground1Hover }}
           whileTap={{ scale: 0.95 }}
         >
           <Subtract20Regular />
         </motion.button>
         <motion.button
-          style={styles.controlButton}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '46px',
+            height: '100%',
+            border: 'none',
+            background: 'transparent',
+            color: tokens.colorNeutralForeground2,
+            cursor: 'pointer',
+            transition: 'all 0.15s ease',
+          }}
           onClick={handleMaximize}
-          whileHover={{ scale: 1.05, backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
+          whileHover={{ scale: 1.05, backgroundColor: tokens.colorNeutralBackground1Hover }}
           whileTap={{ scale: 0.95 }}
         >
           <Square20Regular />
         </motion.button>
         <motion.button
-          style={styles.controlButton}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '46px',
+            height: '100%',
+            border: 'none',
+            background: 'transparent',
+            color: tokens.colorNeutralForeground2,
+            cursor: 'pointer',
+            transition: 'all 0.15s ease',
+          }}
           onClick={handleClose}
           whileHover={{ scale: 1.05, backgroundColor: '#E81123' }}
           whileTap={{ scale: 0.95 }}

@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text } from '@fluentui/react-components';
+import { Text, tokens } from '@fluentui/react-components';
 import {
   Video24Regular,
   Camera24Regular,
@@ -35,24 +35,11 @@ const styles = {
     paddingBottom: '32px',
     gap: '24px',
   },
-  heroTitle: {
-    fontSize: '42px',
-    fontWeight: 700,
-    lineHeight: 1.1,
-    letterSpacing: '-0.02em',
-    color: '#FFFFFF',
-  },
   heroGradient: {
     background: 'linear-gradient(135deg, #6067D6 0%, #00D9FF 50%, #FF6B9D 100%)',
     WebkitBackgroundClip: 'text',
     WebkitTextFillColor: 'transparent',
     backgroundClip: 'text',
-  },
-  heroSubtitle: {
-    fontSize: '16px',
-    color: 'rgba(255, 255, 255, 0.6)',
-    maxWidth: '500px',
-    lineHeight: 1.6,
   },
   platformLogos: {
     display: 'flex',
@@ -67,8 +54,6 @@ const styles = {
     width: '40px',
     height: '40px',
     borderRadius: '10px',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    border: '1px solid rgba(255, 255, 255, 0.08)',
     fontSize: '18px',
     transition: 'all 0.2s ease',
     cursor: 'default',
@@ -91,11 +76,6 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  sectionTitle: {
-    fontSize: '18px',
-    fontWeight: 600,
-    color: '#FFFFFF',
-  },
   downloadsList: {
     display: 'flex',
     flexDirection: 'column' as const,
@@ -110,21 +90,9 @@ const styles = {
     gap: '16px',
     textAlign: 'center' as const,
   },
-  emptyText: {
-    color: 'rgba(255, 255, 255, 0.5)',
-    fontSize: '15px',
-  },
   stats: {
     display: 'flex',
     gap: '24px',
-  },
-  stat: {
-    fontSize: '13px',
-    color: 'rgba(255, 255, 255, 0.5)',
-  },
-  statValue: {
-    color: '#9597F5',
-    fontWeight: 600,
   },
 };
 
@@ -174,12 +142,17 @@ export default function HomePage() {
 
   // Listen for download events from Tauri
   useEffect(() => {
-    let unlisten: (() => void) | undefined;
+    let progressUnlisten: (() => void) | undefined;
+    let completeUnlisten: (() => void) | undefined;
+    let errorUnlisten: (() => void) | undefined;
+    let mounted = true;
 
     const setupListeners = async () => {
       const { listen } = await import('@tauri-apps/api/event');
 
-      const progressUnlisten = await listen<{
+      if (!mounted) return;
+
+      progressUnlisten = await listen<{
         id: string;
         progress: number;
         speed: string;
@@ -210,31 +183,34 @@ export default function HomePage() {
         }
       });
 
-      const completeUnlisten = await listen<{ id: string; success: boolean }>('download-complete', (event) => {
+      if (!mounted) return;
+
+      completeUnlisten = await listen<{ id: string; success: boolean }>('download-complete', (event) => {
         const { id, success } = event.payload;
+        console.log('[Complete Event]', { id, success });
         if (success) {
-          updateStatus(id, 'completed');
+          useDownloadStore.getState().updateStatus(id, 'completed');
         }
       });
 
-      const errorUnlisten = await listen<{ id: string; error: string }>('download-error', (event) => {
-        const { id } = event.payload;
-        updateStatus(id, 'error');
-      });
+      if (!mounted) return;
 
-      unlisten = () => {
-        progressUnlisten();
-        completeUnlisten();
-        errorUnlisten();
-      };
+      errorUnlisten = await listen<{ id: string; error: string }>('download-error', (event) => {
+        const { id, error } = event.payload;
+        console.log('[Error Event]', { id, error });
+        useDownloadStore.getState().updateStatus(id, 'error');
+      });
     };
 
     setupListeners();
 
     return () => {
-      if (unlisten) unlisten();
+      mounted = false;
+      if (progressUnlisten) progressUnlisten();
+      if (completeUnlisten) completeUnlisten();
+      if (errorUnlisten) errorUnlisten();
     };
-  }, [updateStatus]);
+  }, []);
 
   const handleURLSubmit = useCallback(async (url: string) => {
     setIsLoading(true);
@@ -392,7 +368,7 @@ export default function HomePage() {
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
       >
         <motion.h1
-          style={styles.heroTitle}
+          style={{ fontSize: '42px', fontWeight: 700, lineHeight: 1.1, letterSpacing: '-0.02em', color: tokens.colorNeutralForeground1 }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
@@ -402,7 +378,7 @@ export default function HomePage() {
         </motion.h1>
 
         <motion.p
-          style={styles.heroSubtitle}
+          style={{ fontSize: '16px', color: tokens.colorNeutralForeground3, maxWidth: '500px', lineHeight: 1.6 }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
@@ -419,7 +395,7 @@ export default function HomePage() {
           {platforms.map((platform, index) => (
             <motion.div
               key={platform.name}
-              style={styles.platformLogo}
+              style={{ ...styles.platformLogo, backgroundColor: tokens.colorNeutralBackground3, border: `1px solid ${tokens.colorNeutralStroke2}` }}
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3, delay: 0.4 + index * 0.05 }}
@@ -430,7 +406,7 @@ export default function HomePage() {
             </motion.div>
           ))}
           <motion.span
-            style={{ color: 'rgba(255,255,255,0.4)', fontSize: '13px' }}
+            style={{ color: tokens.colorNeutralForeground3, fontSize: '13px' }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.7 }}
@@ -447,14 +423,14 @@ export default function HomePage() {
       {downloads.length > 0 && (
         <div style={styles.downloadsSection}>
           <div style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>{t('nav.downloads')}</Text>
+            <Text style={{ fontSize: '18px', fontWeight: 600, color: tokens.colorNeutralForeground1 }}>{t('nav.downloads')}</Text>
             <div style={styles.stats}>
-              <span style={styles.stat}>
-                {t('home.activeDownloads')}: <span style={styles.statValue}>{activeDownloads.length}</span>
+              <span style={{ fontSize: '13px', color: tokens.colorNeutralForeground3 }}>
+                {t('home.activeDownloads')}: <span style={{ color: '#9597F5', fontWeight: 600 }}>{activeDownloads.length}</span>
               </span>
-              <span style={styles.stat}>
+              <span style={{ fontSize: '13px', color: tokens.colorNeutralForeground3 }}>
                 {t('home.completedDownloads')}:{' '}
-                <span style={styles.statValue}>
+                <span style={{ color: '#9597F5', fontWeight: 600 }}>
                   {downloads.filter((d) => d.status === 'completed').length}
                 </span>
               </span>
@@ -495,8 +471,8 @@ export default function HomePage() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
         >
-          <ArrowDownload24Regular style={{ fontSize: '48px', opacity: 0.5 }} />
-          <span style={styles.emptyText}>
+          <ArrowDownload24Regular style={{ fontSize: '48px', opacity: 0.5, color: tokens.colorNeutralForeground3 }} />
+          <span style={{ color: tokens.colorNeutralForeground3, fontSize: '15px' }}>
             {t('home.emptyDownloads')}
           </span>
         </motion.div>

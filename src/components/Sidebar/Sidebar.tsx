@@ -1,4 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom';
+import { tokens } from '@fluentui/react-components';
 import {
   Home24Regular,
   Home24Filled,
@@ -16,8 +17,6 @@ const styles = {
     flexDirection: 'column' as const,
     width: '68px',
     height: '100%',
-    backgroundColor: '#0A0B14',
-    borderRight: '1px solid rgba(255, 255, 255, 0.06)',
     padding: '16px 0',
     gap: '8px',
     alignItems: 'center',
@@ -38,18 +37,8 @@ const styles = {
     borderRadius: '12px',
     border: 'none',
     background: 'transparent',
-    color: 'rgba(255, 255, 255, 0.5)',
     cursor: 'pointer',
     transition: 'all 0.2s ease',
-  },
-  navItemHover: {
-    backgroundColor: 'rgba(96, 103, 214, 0.15)',
-    color: 'rgba(255, 255, 255, 0.8)',
-    transform: 'scale(1.05)',
-  },
-  navItemActive: {
-    backgroundColor: 'rgba(96, 103, 214, 0.2)',
-    color: '#9597F5',
   },
   activeIndicator: {
     position: 'absolute' as const,
@@ -64,7 +53,6 @@ const styles = {
     flexDirection: 'column' as const,
     gap: '4px',
     paddingTop: '16px',
-    borderTop: '1px solid rgba(255, 255, 255, 0.06)',
   },
   downloadCount: {
     position: 'absolute' as const,
@@ -101,21 +89,22 @@ function NavItem({ icon, activeIcon, label, path, badge }: NavItemProps) {
     <button
       style={{
         ...styles.navItem,
-        ...(isActive ? styles.navItemActive : {}),
+        backgroundColor: isActive ? 'rgba(96, 103, 214, 0.2)' : 'transparent',
+        color: isActive ? '#9597F5' : tokens.colorNeutralForeground3,
       }}
       onClick={() => navigate(path)}
       title={label}
       onMouseEnter={(e) => {
         if (!isActive) {
           e.currentTarget.style.backgroundColor = 'rgba(96, 103, 214, 0.15)';
-          e.currentTarget.style.color = 'rgba(255, 255, 255, 0.8)';
+          e.currentTarget.style.color = tokens.colorNeutralForeground1;
           e.currentTarget.style.transform = 'scale(1.05)';
         }
       }}
       onMouseLeave={(e) => {
         if (!isActive) {
           e.currentTarget.style.backgroundColor = 'transparent';
-          e.currentTarget.style.color = 'rgba(255, 255, 255, 0.5)';
+          e.currentTarget.style.color = tokens.colorNeutralForeground3;
           e.currentTarget.style.transform = 'scale(1)';
         }
       }}
@@ -137,7 +126,11 @@ export default function Sidebar() {
   const activeDownloads = 0;
 
   return (
-    <nav style={styles.root}>
+    <nav style={{
+      ...styles.root,
+      backgroundColor: tokens.colorNeutralBackground1,
+      borderRight: `1px solid ${tokens.colorNeutralStroke2}`,
+    }}>
       <div style={styles.navSection}>
         <NavItem
           icon={<Home24Regular />}
@@ -160,7 +153,10 @@ export default function Sidebar() {
         />
       </div>
 
-      <div style={styles.bottomSection}>
+      <div style={{
+        ...styles.bottomSection,
+        borderTop: `1px solid ${tokens.colorNeutralStroke2}`,
+      }}>
         <NavItem
           icon={<Settings24Regular />}
           activeIcon={<Settings24Filled />}

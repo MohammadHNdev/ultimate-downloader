@@ -7,6 +7,7 @@ import {
   Option,
   Button,
   Input,
+  tokens,
 } from '@fluentui/react-components';
 import {
   Folder24Regular,
@@ -15,7 +16,6 @@ import {
   Info24Regular,
   CheckmarkCircle24Regular,
 } from '@fluentui/react-icons';
-// Removed Button import - not needed anymore
 import { motion } from 'framer-motion';
 import { useSettingsStore, QualityOption, ThemeOption } from '../../stores/settingsStore';
 
@@ -32,15 +32,6 @@ const styles = {
     flexDirection: 'column' as const,
     gap: '8px',
   },
-  title: {
-    fontSize: '28px',
-    fontWeight: 700,
-    color: '#FFFFFF',
-  },
-  subtitle: {
-    fontSize: '14px',
-    color: 'rgba(255, 255, 255, 0.5)',
-  },
   sections: {
     display: 'flex',
     flexDirection: 'column' as const,
@@ -54,9 +45,7 @@ const styles = {
     flexDirection: 'column' as const,
     gap: '16px',
     padding: '20px',
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
     borderRadius: '16px',
-    border: '1px solid rgba(255, 255, 255, 0.06)',
   },
   sectionHeader: {
     display: 'flex',
@@ -73,36 +62,17 @@ const styles = {
     backgroundColor: 'rgba(96, 103, 214, 0.15)',
     color: '#9597F5',
   },
-  sectionTitle: {
-    fontSize: '16px',
-    fontWeight: 600,
-    color: '#FFFFFF',
-  },
-  sectionDescription: {
-    fontSize: '13px',
-    color: 'rgba(255, 255, 255, 0.5)',
-  },
   settingRow: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: '12px 0',
-    borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
   },
   settingInfo: {
     display: 'flex',
     flexDirection: 'column' as const,
     gap: '4px',
     flex: 1,
-  },
-  settingLabel: {
-    fontSize: '14px',
-    fontWeight: 500,
-    color: '#FFFFFF',
-  },
-  settingDescription: {
-    fontSize: '12px',
-    color: 'rgba(255, 255, 255, 0.45)',
   },
   settingControl: {
     flexShrink: 0,
@@ -125,15 +95,6 @@ const styles = {
   },
   versionText: {
     flex: 1,
-  },
-  versionNumber: {
-    fontSize: '14px',
-    fontWeight: 600,
-    color: '#FFFFFF',
-  },
-  versionLabel: {
-    fontSize: '12px',
-    color: 'rgba(255, 255, 255, 0.5)',
   },
   checkUpdateBtn: {
     flexShrink: 0,
@@ -195,13 +156,13 @@ export default function SettingsPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
       >
-        <Text style={styles.title}>{t('settings.title')}</Text>
-        <Text style={styles.subtitle}>{t('settings.subtitle')}</Text>
+        <Text style={{ fontSize: '28px', fontWeight: 700, color: tokens.colorNeutralForeground1 }}>{t('settings.title')}</Text>
+        <Text style={{ fontSize: '14px', color: tokens.colorNeutralForeground3 }}>{t('settings.subtitle')}</Text>
       </motion.div>
 
       <div style={styles.sections}>
         <motion.div
-          style={styles.section}
+          style={{ ...styles.section, backgroundColor: tokens.colorNeutralBackground2, border: `1px solid ${tokens.colorNeutralStroke2}` }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.1 }}
@@ -211,15 +172,15 @@ export default function SettingsPage() {
               <Folder24Regular />
             </div>
             <div>
-              <Text style={styles.sectionTitle}>{t('settings.sections.download.title')}</Text>
-              <Text style={styles.sectionDescription}>{t('settings.sections.download.description')}</Text>
+              <Text style={{ fontSize: '16px', fontWeight: 600, color: tokens.colorNeutralForeground1 }}>{t('settings.sections.download.title')}</Text>
+              <Text style={{ fontSize: '13px', color: tokens.colorNeutralForeground3 }}>{t('settings.sections.download.description')}</Text>
             </div>
           </div>
 
-          <div style={styles.settingRow}>
+          <div style={{ ...styles.settingRow, borderBottom: `1px solid ${tokens.colorNeutralStroke2}` }}>
             <div style={styles.settingInfo}>
-              <Text style={styles.settingLabel}>{t('settings.sections.download.saveLocation')}</Text>
-              <Text style={styles.settingDescription}>{t('settings.sections.download.saveLocationDesc')}</Text>
+              <Text style={{ fontSize: '14px', fontWeight: 500, color: tokens.colorNeutralForeground1 }}>{t('settings.sections.download.saveLocation')}</Text>
+              <Text style={{ fontSize: '12px', color: tokens.colorNeutralForeground3 }}>{t('settings.sections.download.saveLocationDesc')}</Text>
             </div>
             <div style={styles.pathInput}>
               <Input
@@ -233,7 +194,7 @@ export default function SettingsPage() {
         </motion.div>
 
         <motion.div
-          style={styles.section}
+          style={{ ...styles.section, backgroundColor: tokens.colorNeutralBackground2, border: `1px solid ${tokens.colorNeutralStroke2}` }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.2 }}
@@ -243,15 +204,15 @@ export default function SettingsPage() {
               <ArrowDownload24Regular />
             </div>
             <div>
-              <Text style={styles.sectionTitle}>{t('settings.sections.downloadSettings.title')}</Text>
-              <Text style={styles.sectionDescription}>{t('settings.sections.downloadSettings.description')}</Text>
+              <Text style={{ fontSize: '16px', fontWeight: 600, color: tokens.colorNeutralForeground1 }}>{t('settings.sections.downloadSettings.title')}</Text>
+              <Text style={{ fontSize: '13px', color: tokens.colorNeutralForeground3 }}>{t('settings.sections.downloadSettings.description')}</Text>
             </div>
           </div>
 
-          <div style={styles.settingRow}>
+          <div style={{ ...styles.settingRow, borderBottom: `1px solid ${tokens.colorNeutralStroke2}` }}>
             <div style={styles.settingInfo}>
-              <Text style={styles.settingLabel}>{t('settings.sections.downloadSettings.quality')}</Text>
-              <Text style={styles.settingDescription}>{t('settings.sections.downloadSettings.qualityDesc')}</Text>
+              <Text style={{ fontSize: '14px', fontWeight: 500, color: tokens.colorNeutralForeground1 }}>{t('settings.sections.downloadSettings.quality')}</Text>
+              <Text style={{ fontSize: '12px', color: tokens.colorNeutralForeground3 }}>{t('settings.sections.downloadSettings.qualityDesc')}</Text>
             </div>
             <Dropdown
               style={styles.settingControl}
@@ -266,10 +227,10 @@ export default function SettingsPage() {
             </Dropdown>
           </div>
 
-          <div style={styles.settingRow}>
+          <div style={{ ...styles.settingRow, borderBottom: `1px solid ${tokens.colorNeutralStroke2}` }}>
             <div style={styles.settingInfo}>
-              <Text style={styles.settingLabel}>{t('settings.sections.downloadSettings.metadata')}</Text>
-              <Text style={styles.settingDescription}>{t('settings.sections.downloadSettings.metadataDesc')}</Text>
+              <Text style={{ fontSize: '14px', fontWeight: 500, color: tokens.colorNeutralForeground1 }}>{t('settings.sections.downloadSettings.metadata')}</Text>
+              <Text style={{ fontSize: '12px', color: tokens.colorNeutralForeground3 }}>{t('settings.sections.downloadSettings.metadataDesc')}</Text>
             </div>
             <Switch
               checked={embedMetadata}
@@ -279,8 +240,8 @@ export default function SettingsPage() {
 
           <div style={styles.settingRow}>
             <div style={styles.settingInfo}>
-              <Text style={styles.settingLabel}>{t('settings.sections.downloadSettings.thumbnail')}</Text>
-              <Text style={styles.settingDescription}>{t('settings.sections.downloadSettings.thumbnailDesc')}</Text>
+              <Text style={{ fontSize: '14px', fontWeight: 500, color: tokens.colorNeutralForeground1 }}>{t('settings.sections.downloadSettings.thumbnail')}</Text>
+              <Text style={{ fontSize: '12px', color: tokens.colorNeutralForeground3 }}>{t('settings.sections.downloadSettings.thumbnailDesc')}</Text>
             </div>
             <Switch
               checked={embedThumbnail}
@@ -290,7 +251,7 @@ export default function SettingsPage() {
         </motion.div>
 
         <motion.div
-          style={styles.section}
+          style={{ ...styles.section, backgroundColor: tokens.colorNeutralBackground2, border: `1px solid ${tokens.colorNeutralStroke2}` }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.3 }}
@@ -300,15 +261,15 @@ export default function SettingsPage() {
               <Color24Regular />
             </div>
             <div>
-              <Text style={styles.sectionTitle}>{t('settings.sections.appearance.title')}</Text>
-              <Text style={styles.sectionDescription}>{t('settings.sections.appearance.description')}</Text>
+              <Text style={{ fontSize: '16px', fontWeight: 600, color: tokens.colorNeutralForeground1 }}>{t('settings.sections.appearance.title')}</Text>
+              <Text style={{ fontSize: '13px', color: tokens.colorNeutralForeground3 }}>{t('settings.sections.appearance.description')}</Text>
             </div>
           </div>
 
           <div style={styles.settingRow}>
             <div style={styles.settingInfo}>
-              <Text style={styles.settingLabel}>{t('settings.sections.appearance.theme')}</Text>
-              <Text style={styles.settingDescription}>{t('settings.sections.appearance.themeDesc')}</Text>
+              <Text style={{ fontSize: '14px', fontWeight: 500, color: tokens.colorNeutralForeground1 }}>{t('settings.sections.appearance.theme')}</Text>
+              <Text style={{ fontSize: '12px', color: tokens.colorNeutralForeground3 }}>{t('settings.sections.appearance.themeDesc')}</Text>
             </div>
             <Dropdown
               style={styles.settingControl}
@@ -325,7 +286,7 @@ export default function SettingsPage() {
         </motion.div>
 
         <motion.div
-          style={styles.section}
+          style={{ ...styles.section, backgroundColor: tokens.colorNeutralBackground2, border: `1px solid ${tokens.colorNeutralStroke2}` }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.4 }}
@@ -335,16 +296,16 @@ export default function SettingsPage() {
               <Info24Regular />
             </div>
             <div>
-              <Text style={styles.sectionTitle}>{t('settings.sections.about.title')}</Text>
-              <Text style={styles.sectionDescription}>{t('settings.sections.about.description')}</Text>
+              <Text style={{ fontSize: '16px', fontWeight: 600, color: tokens.colorNeutralForeground1 }}>{t('settings.sections.about.title')}</Text>
+              <Text style={{ fontSize: '13px', color: tokens.colorNeutralForeground3 }}>{t('settings.sections.about.description')}</Text>
             </div>
           </div>
 
           <div style={styles.versionInfo}>
             <CheckmarkCircle24Regular style={{ color: '#4ADE80' }} />
             <div style={styles.versionText}>
-              <Text style={styles.versionNumber}>{t('settings.sections.about.version')} v1.4.3</Text>
-              <Text style={styles.versionLabel}>{t('settings.sections.about.latestVersion')}</Text>
+              <Text style={{ fontSize: '14px', fontWeight: 600, color: tokens.colorNeutralForeground1 }}>{t('settings.sections.about.version')} v1.5.0</Text>
+              <Text style={{ fontSize: '12px', color: tokens.colorNeutralForeground3 }}>{t('settings.sections.about.latestVersion')}</Text>
             </div>
           </div>
         </motion.div>
