@@ -102,7 +102,7 @@ function NavItem({ icon, activeIcon, label, path, badge }: NavItemProps) {
           ...(isActive ? styles.navItemActive : {}),
         }}
         onClick={() => navigate(path)}
-        whileHover={{ scale: 1.05, backgroundColor: isActive ? 'rgba(96, 103, 214, 0.2)' : 'rgba(255, 255, 255, 0.08)' }}
+        whileHover={{ scale: 1.05, backgroundColor: isActive ? 'rgba(96, 103, 214, 0.25)' : 'rgba(96, 103, 214, 0.1)' }}
         whileTap={{ scale: 0.95 }}
       >
         {isActive && (

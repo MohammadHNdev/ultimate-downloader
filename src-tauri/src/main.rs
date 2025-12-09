@@ -4,18 +4,10 @@
 mod downloader;
 mod video_info;
 
-use downloader::{DownloadOptions, DownloadProgress};
+use downloader::DownloadOptions;
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
-use std::sync::Arc;
-use tauri::{Emitter, State};
-use tokio::sync::Mutex;
+use tauri::Emitter;
 use video_info::VideoInfo;
-
-// Application state
-struct AppState {
-    downloads: Arc<Mutex<HashMap<String, DownloadProgress>>>,
-}
 
 #[derive(Debug, Serialize, Deserialize)]
 struct VideoInfoResponse {
@@ -52,32 +44,12 @@ async fn fetch_video_info(url: String) -> Result<VideoInfoResponse, String> {
 #[tauri::command]
 async fn start_download(
     app: tauri::AppHandle,
-    state: State<'_, AppState>,
     url: String,
     format_id: String,
     output_path: String,
     options: DownloadOptions,
 ) -> Result<DownloadResponse, String> {
     let download_id = uuid::Uuid::new_v4().to_string();
-    let downloads = state.downloads.clone();
-
-    // Initialize download progress
-    {
-        let mut downloads = downloads.lock().await;
-        downloads.insert(
-            download_id.clone(),
-            DownloadProgress {
-                id: download_id.clone(),
-                progress: 0.0,
-                speed: String::new(),
-                eta: String::new(),
-                downloaded_size: String::new(),
-                total_size: String::new(),
-                status: "starting".to_string(),
-            },
-        );
-    }
-
     let download_id_clone = download_id.clone();
     let app_for_callback = app.clone();
     let app_for_result = app.clone();
@@ -90,17 +62,8 @@ async fn start_download(
             &output_path,
             &options,
             move |progress| {
-                // Update progress in state
-                let downloads = downloads.clone();
-                let progress_clone = progress.clone();
-                let app = app_for_callback.clone();
-                tokio::spawn(async move {
-                    let mut downloads = downloads.lock().await;
-                    downloads.insert(progress_clone.id.clone(), progress_clone);
-                });
-
-                // Emit progress event to frontend
-                let _ = app.emit("download-progress", progress);
+                // Emit progress event to frontend immediately
+                let _ = app_for_callback.emit("download-progress", &progress);
             },
         )
         .await
@@ -135,28 +98,9 @@ async fn start_download(
 
 // Cancel a download
 #[tauri::command]
-async fn cancel_download(
-    state: State<'_, AppState>,
-    download_id: String,
-) -> Result<bool, String> {
-    let mut downloads = state.downloads.lock().await;
-    if let Some(progress) = downloads.get_mut(&download_id) {
-        progress.status = "cancelled".to_string();
-        // TODO: Implement actual cancellation logic
-        Ok(true)
-    } else {
-        Ok(false)
-    }
-}
-
-// Get download progress
-#[tauri::command]
-async fn get_download_progress(
-    state: State<'_, AppState>,
-    download_id: String,
-) -> Result<Option<DownloadProgress>, String> {
-    let downloads = state.downloads.lock().await;
-    Ok(downloads.get(&download_id).cloned())
+async fn cancel_download(download_id: String) -> Result<bool, String> {
+    // TODO: Implement actual cancellation logic
+    Ok(true)
 }
 
 // Get default download path
@@ -180,14 +124,10 @@ fn main() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_notification::init())
-        .manage(AppState {
-            downloads: Arc::new(Mutex::new(HashMap::new())),
-        })
         .invoke_handler(tauri::generate_handler![
             fetch_video_info,
             start_download,
             cancel_download,
-            get_download_progress,
             get_default_download_path,
             check_ytdlp_installed,
         ])
