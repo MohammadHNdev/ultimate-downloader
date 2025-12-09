@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Text,
   Switch,
@@ -13,9 +14,10 @@ import {
   Color24Regular,
   Info24Regular,
   CheckmarkCircle24Regular,
+  LocalLanguage24Regular,
 } from '@fluentui/react-icons';
 import { motion } from 'framer-motion';
-import { useSettingsStore, QualityOption, ThemeOption } from '../../stores/settingsStore';
+import { useSettingsStore, QualityOption, ThemeOption, LanguageOption } from '../../stores/settingsStore';
 
 const styles = {
   root: {
@@ -139,10 +141,12 @@ const styles = {
 };
 
 export default function SettingsPage() {
+  const { t } = useTranslation();
   const {
     downloadPath,
     defaultQuality,
     theme,
+    language,
     autoUpdate,
     notifications,
     simultaneousDownloads,
@@ -151,6 +155,7 @@ export default function SettingsPage() {
     setDownloadPath,
     setDefaultQuality,
     setTheme,
+    setLanguage,
     setAutoUpdate,
     setNotifications,
     setSimultaneousDownloads,
@@ -198,10 +203,8 @@ export default function SettingsPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
       >
-        <Text style={styles.title}>Settings</Text>
-        <Text style={styles.subtitle}>
-          Configure your download preferences and application settings
-        </Text>
+        <Text style={styles.title}>{t('settings.title')}</Text>
+        <Text style={styles.subtitle}>{t('settings.subtitle')}</Text>
       </motion.div>
 
       <div style={styles.sections}>
@@ -216,19 +219,15 @@ export default function SettingsPage() {
               <Folder24Regular />
             </div>
             <div>
-              <Text style={styles.sectionTitle}>Download Location</Text>
-              <Text style={styles.sectionDescription}>
-                Choose where your downloads will be saved
-              </Text>
+              <Text style={styles.sectionTitle}>{t('settings.sections.download.title')}</Text>
+              <Text style={styles.sectionDescription}>{t('settings.sections.download.description')}</Text>
             </div>
           </div>
 
           <div style={styles.settingRow}>
             <div style={styles.settingInfo}>
-              <Text style={styles.settingLabel}>Save Location</Text>
-              <Text style={styles.settingDescription}>
-                All downloaded files will be saved to this folder
-              </Text>
+              <Text style={styles.settingLabel}>{t('settings.sections.download.saveLocation')}</Text>
+              <Text style={styles.settingDescription}>{t('settings.sections.download.saveLocationDesc')}</Text>
             </div>
             <div style={styles.pathInput}>
               <Input
@@ -236,7 +235,7 @@ export default function SettingsPage() {
                 onChange={(_, data) => setDownloadPath(data.value)}
                 style={{ flex: 1 }}
               />
-              <Button onClick={handleBrowse} appearance="primary">Browse</Button>
+              <Button onClick={handleBrowse} appearance="primary">{t('settings.sections.download.browse')}</Button>
             </div>
           </div>
         </motion.div>
@@ -252,27 +251,23 @@ export default function SettingsPage() {
               <ArrowDownload24Regular />
             </div>
             <div>
-              <Text style={styles.sectionTitle}>Download Settings</Text>
-              <Text style={styles.sectionDescription}>
-                Configure download quality and behavior
-              </Text>
+              <Text style={styles.sectionTitle}>{t('settings.sections.downloadSettings.title')}</Text>
+              <Text style={styles.sectionDescription}>{t('settings.sections.downloadSettings.description')}</Text>
             </div>
           </div>
 
           <div style={styles.settingRow}>
             <div style={styles.settingInfo}>
-              <Text style={styles.settingLabel}>Default Quality</Text>
-              <Text style={styles.settingDescription}>
-                Preferred video quality for downloads
-              </Text>
+              <Text style={styles.settingLabel}>{t('settings.sections.downloadSettings.quality')}</Text>
+              <Text style={styles.settingDescription}>{t('settings.sections.downloadSettings.qualityDesc')}</Text>
             </div>
             <Dropdown
               style={styles.settingControl}
-              value={defaultQuality === 'best' ? 'Best Available' : defaultQuality}
+              value={defaultQuality === 'best' ? t('settings.sections.downloadSettings.qualityBest') : defaultQuality}
               selectedOptions={[defaultQuality]}
               onOptionSelect={(_, data) => setDefaultQuality(data.optionValue as QualityOption)}
             >
-              <Option value="best">Best Available</Option>
+              <Option value="best">{t('settings.sections.downloadSettings.qualityBest')}</Option>
               <Option value="1080p">1080p (Full HD)</Option>
               <Option value="720p">720p (HD)</Option>
               <Option value="480p">480p (SD)</Option>
@@ -281,10 +276,8 @@ export default function SettingsPage() {
 
           <div style={styles.settingRow}>
             <div style={styles.settingInfo}>
-              <Text style={styles.settingLabel}>Simultaneous Downloads</Text>
-              <Text style={styles.settingDescription}>
-                Maximum number of concurrent downloads
-              </Text>
+              <Text style={styles.settingLabel}>{t('settings.sections.downloadSettings.simultaneous')}</Text>
+              <Text style={styles.settingDescription}>{t('settings.sections.downloadSettings.simultaneousDesc')}</Text>
             </div>
             <Dropdown
               style={styles.settingControl}
@@ -301,10 +294,8 @@ export default function SettingsPage() {
 
           <div style={styles.settingRow}>
             <div style={styles.settingInfo}>
-              <Text style={styles.settingLabel}>Embed Metadata</Text>
-              <Text style={styles.settingDescription}>
-                Include title, artist, and other info in downloaded files
-              </Text>
+              <Text style={styles.settingLabel}>{t('settings.sections.downloadSettings.metadata')}</Text>
+              <Text style={styles.settingDescription}>{t('settings.sections.downloadSettings.metadataDesc')}</Text>
             </div>
             <Switch
               checked={embedMetadata}
@@ -314,10 +305,8 @@ export default function SettingsPage() {
 
           <div style={styles.settingRow}>
             <div style={styles.settingInfo}>
-              <Text style={styles.settingLabel}>Embed Thumbnail</Text>
-              <Text style={styles.settingDescription}>
-                Add thumbnail as album art to audio files
-              </Text>
+              <Text style={styles.settingLabel}>{t('settings.sections.downloadSettings.thumbnail')}</Text>
+              <Text style={styles.settingDescription}>{t('settings.sections.downloadSettings.thumbnailDesc')}</Text>
             </div>
             <Switch
               checked={embedThumbnail}
@@ -337,38 +326,48 @@ export default function SettingsPage() {
               <Color24Regular />
             </div>
             <div>
-              <Text style={styles.sectionTitle}>Appearance</Text>
-              <Text style={styles.sectionDescription}>
-                Customize the look and feel of the app
-              </Text>
+              <Text style={styles.sectionTitle}>{t('settings.sections.appearance.title')}</Text>
+              <Text style={styles.sectionDescription}>{t('settings.sections.appearance.description')}</Text>
             </div>
           </div>
 
           <div style={styles.settingRow}>
             <div style={styles.settingInfo}>
-              <Text style={styles.settingLabel}>Theme</Text>
-              <Text style={styles.settingDescription}>
-                Choose your preferred color scheme
-              </Text>
+              <Text style={styles.settingLabel}>{t('settings.sections.appearance.language')}</Text>
+              <Text style={styles.settingDescription}>{t('settings.sections.appearance.languageDesc')}</Text>
             </div>
             <Dropdown
               style={styles.settingControl}
-              value={theme.charAt(0).toUpperCase() + theme.slice(1)}
-              selectedOptions={[theme]}
-              onOptionSelect={(_, data) => setTheme(data.optionValue as ThemeOption)}
+              value={language === 'en' ? 'English' : 'فارسی'}
+              selectedOptions={[language]}
+              onOptionSelect={(_, data) => setLanguage(data.optionValue as LanguageOption)}
             >
-              <Option value="dark">Dark</Option>
-              <Option value="light">Light</Option>
-              <Option value="system">System</Option>
+              <Option value="en">English</Option>
+              <Option value="fa">فارسی</Option>
             </Dropdown>
           </div>
 
           <div style={styles.settingRow}>
             <div style={styles.settingInfo}>
-              <Text style={styles.settingLabel}>Notifications</Text>
-              <Text style={styles.settingDescription}>
-                Show notifications when downloads complete
-              </Text>
+              <Text style={styles.settingLabel}>{t('settings.sections.appearance.theme')}</Text>
+              <Text style={styles.settingDescription}>{t('settings.sections.appearance.themeDesc')}</Text>
+            </div>
+            <Dropdown
+              style={styles.settingControl}
+              value={theme === 'dark' ? t('settings.sections.appearance.themeDark') : theme === 'light' ? t('settings.sections.appearance.themeLight') : t('settings.sections.appearance.themeSystem')}
+              selectedOptions={[theme]}
+              onOptionSelect={(_, data) => setTheme(data.optionValue as ThemeOption)}
+            >
+              <Option value="dark">{t('settings.sections.appearance.themeDark')}</Option>
+              <Option value="light">{t('settings.sections.appearance.themeLight')}</Option>
+              <Option value="system">{t('settings.sections.appearance.themeSystem')}</Option>
+            </Dropdown>
+          </div>
+
+          <div style={styles.settingRow}>
+            <div style={styles.settingInfo}>
+              <Text style={styles.settingLabel}>{t('settings.sections.appearance.notifications')}</Text>
+              <Text style={styles.settingDescription}>{t('settings.sections.appearance.notificationsDesc')}</Text>
             </div>
             <Switch
               checked={notifications}
@@ -388,19 +387,15 @@ export default function SettingsPage() {
               <Info24Regular />
             </div>
             <div>
-              <Text style={styles.sectionTitle}>About</Text>
-              <Text style={styles.sectionDescription}>
-                Application information and updates
-              </Text>
+              <Text style={styles.sectionTitle}>{t('settings.sections.about.title')}</Text>
+              <Text style={styles.sectionDescription}>{t('settings.sections.about.description')}</Text>
             </div>
           </div>
 
           <div style={styles.settingRow}>
             <div style={styles.settingInfo}>
-              <Text style={styles.settingLabel}>Auto Update</Text>
-              <Text style={styles.settingDescription}>
-                Automatically check for and install updates
-              </Text>
+              <Text style={styles.settingLabel}>{t('settings.sections.about.autoUpdate')}</Text>
+              <Text style={styles.settingDescription}>{t('settings.sections.about.autoUpdateDesc')}</Text>
             </div>
             <Switch
               checked={autoUpdate}
@@ -411,11 +406,11 @@ export default function SettingsPage() {
           <div style={styles.versionInfo}>
             <CheckmarkCircle24Regular style={{ color: '#4ADE80' }} />
             <div style={styles.versionText}>
-              <Text style={styles.versionNumber}>Ultimate Downloader v1.0.0</Text>
-              <Text style={styles.versionLabel}>You're running the latest version</Text>
+              <Text style={styles.versionNumber}>{t('settings.sections.about.version')} v1.1.0</Text>
+              <Text style={styles.versionLabel}>{t('settings.sections.about.latestVersion')}</Text>
             </div>
             <Button style={styles.checkUpdateBtn} appearance="subtle">
-              Check for Updates
+              {t('settings.sections.about.checkUpdate')}
             </Button>
           </div>
         </motion.div>

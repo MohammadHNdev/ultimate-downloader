@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Text } from '@fluentui/react-components';
 import {
   Video24Regular,
@@ -16,6 +17,7 @@ import VideoPreviewModal, {
   VideoInfo,
 } from '../../components/VideoPreview/VideoPreviewModal';
 import { useDownloadStore } from '../../stores/downloadStore';
+import { useSettingsStore } from '../../stores/settingsStore';
 
 const styles = {
   root: {
@@ -164,11 +166,13 @@ const mockVideoInfo: VideoInfo = {
 };
 
 export default function HomePage() {
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [videoInfo, setVideoInfo] = useState<VideoInfo | null>(null);
   const { downloads, addDownload, pauseDownload, resumeDownload, cancelDownload } =
     useDownloadStore();
+  const { downloadPath } = useSettingsStore();
 
   const handleURLSubmit = useCallback(async (_url: string) => {
     setIsLoading(true);
@@ -238,8 +242,8 @@ export default function HomePage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
         >
-          Download from{' '}
-          <span style={styles.heroGradient}>Anywhere</span>
+          {t('home.title')}{' '}
+          <span style={styles.heroGradient}>{t('home.titleHighlight')}</span>
         </motion.h1>
 
         <motion.p
@@ -248,8 +252,7 @@ export default function HomePage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
-          Paste any video URL and download in the highest quality.
-          Supports 1800+ websites including YouTube, Instagram, TikTok, and more.
+          {t('home.subtitle')}
         </motion.p>
 
         <motion.div
@@ -277,7 +280,7 @@ export default function HomePage() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.7 }}
           >
-            +1800 more
+            {t('home.moreSites')}
           </motion.span>
         </motion.div>
       </motion.div>
@@ -289,13 +292,13 @@ export default function HomePage() {
       {downloads.length > 0 && (
         <div style={styles.downloadsSection}>
           <div style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Downloads</Text>
+            <Text style={styles.sectionTitle}>{t('nav.downloads')}</Text>
             <div style={styles.stats}>
               <span style={styles.stat}>
-                Active: <span style={styles.statValue}>{activeDownloads.length}</span>
+                {t('home.activeDownloads')}: <span style={styles.statValue}>{activeDownloads.length}</span>
               </span>
               <span style={styles.stat}>
-                Completed:{' '}
+                {t('home.completedDownloads')}:{' '}
                 <span style={styles.statValue}>
                   {downloads.filter((d) => d.status === 'completed').length}
                 </span>
@@ -315,8 +318,6 @@ export default function HomePage() {
                   onOpenFolder={async () => {
                     try {
                       const { open } = await import('@tauri-apps/plugin-shell');
-                      const { useSettingsStore } = await import('../../stores/settingsStore');
-                      const downloadPath = useSettingsStore.getState().downloadPath;
                       if (downloadPath) {
                         await open(downloadPath);
                       }
@@ -340,7 +341,7 @@ export default function HomePage() {
         >
           <ArrowDownload24Regular style={{ fontSize: '48px', opacity: 0.5 }} />
           <span style={styles.emptyText}>
-            Your downloads will appear here. Paste a URL above to get started!
+            {t('home.emptyDownloads')}
           </span>
         </motion.div>
       )}

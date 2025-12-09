@@ -1,13 +1,16 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import i18n from '../i18n';
 
 export type QualityOption = 'best' | '1080p' | '720p' | '480p';
 export type ThemeOption = 'dark' | 'light' | 'system';
+export type LanguageOption = 'en' | 'fa';
 
 interface SettingsStore {
   downloadPath: string;
   defaultQuality: QualityOption;
   theme: ThemeOption;
+  language: LanguageOption;
   autoUpdate: boolean;
   notifications: boolean;
   simultaneousDownloads: number;
@@ -16,6 +19,7 @@ interface SettingsStore {
   setDownloadPath: (path: string) => void;
   setDefaultQuality: (quality: QualityOption) => void;
   setTheme: (theme: ThemeOption) => void;
+  setLanguage: (language: LanguageOption) => void;
   setAutoUpdate: (value: boolean) => void;
   setNotifications: (value: boolean) => void;
   setSimultaneousDownloads: (count: number) => void;
@@ -29,6 +33,7 @@ export const useSettingsStore = create<SettingsStore>()(
       downloadPath: '',
       defaultQuality: 'best',
       theme: 'dark',
+      language: 'en',
       autoUpdate: true,
       notifications: true,
       simultaneousDownloads: 3,
@@ -37,6 +42,12 @@ export const useSettingsStore = create<SettingsStore>()(
       setDownloadPath: (path) => set({ downloadPath: path }),
       setDefaultQuality: (quality) => set({ defaultQuality: quality }),
       setTheme: (theme) => set({ theme }),
+      setLanguage: (language) => {
+        i18n.changeLanguage(language);
+        document.documentElement.dir = language === 'fa' ? 'rtl' : 'ltr';
+        document.documentElement.lang = language;
+        set({ language });
+      },
       setAutoUpdate: (value) => set({ autoUpdate: value }),
       setNotifications: (value) => set({ notifications: value }),
       setSimultaneousDownloads: (count) => set({ simultaneousDownloads: count }),
@@ -45,6 +56,13 @@ export const useSettingsStore = create<SettingsStore>()(
     }),
     {
       name: 'ultimate-downloader-settings',
+      onRehydrateStorage: () => (state) => {
+        if (state?.language) {
+          i18n.changeLanguage(state.language);
+          document.documentElement.dir = state.language === 'fa' ? 'rtl' : 'ltr';
+          document.documentElement.lang = state.language;
+        }
+      },
     }
   )
 );

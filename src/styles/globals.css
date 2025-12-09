@@ -75,12 +75,27 @@ html {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Import Vazirmatn for Persian */
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100;200;300;400;500;600;700;800;900&display=swap');
+/* Import Inter for English */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Inter', 'Vazirmatn', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background: #0A0B14;
   color: #FFFFFF;
   overflow: hidden;
   user-select: none;
+}
+
+/* RTL support for Persian */
+body[dir="rtl"] {
+  font-family: 'Vazirmatn', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+[lang="fa"], .rtl {
+  font-family: 'Vazirmatn', 'Inter', sans-serif;
+  direction: rtl;
 }
 
 /* Hide scrollbar but keep functionality */

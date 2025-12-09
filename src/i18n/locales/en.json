@@ -1,0 +1,130 @@
+{
+  "app": {
+    "name": "Ultimate Downloader",
+    "tagline": "Download from Anywhere"
+  },
+  "nav": {
+    "home": "Home",
+    "downloads": "Downloads",
+    "library": "Library",
+    "settings": "Settings"
+  },
+  "home": {
+    "title": "Download from",
+    "titleHighlight": "Anywhere",
+    "subtitle": "Paste any video URL and download in the highest quality. Supports 1800+ websites including YouTube, Instagram, TikTok, and more.",
+    "moreSites": "+1800 more",
+    "emptyDownloads": "Your downloads will appear here. Paste a URL above to get started!",
+    "activeDownloads": "Active",
+    "completedDownloads": "Completed"
+  },
+  "input": {
+    "placeholder": "Paste video URL here... (YouTube, Instagram, TikTok, etc.)",
+    "download": "Download",
+    "errorEmpty": "Please enter a URL",
+    "errorInvalid": "Please enter a valid URL",
+    "clipboardError": "Could not access clipboard"
+  },
+  "download": {
+    "status": {
+      "downloading": "Downloading",
+      "completed": "Completed",
+      "error": "Error",
+      "paused": "Paused",
+      "queued": "Queued"
+    },
+    "speed": "Speed",
+    "eta": "ETA",
+    "left": "left"
+  },
+  "library": {
+    "title": "Library",
+    "videos": "videos",
+    "search": "Search your library...",
+    "sort": {
+      "newest": "Newest",
+      "oldest": "Oldest",
+      "name": "Name",
+      "size": "Size"
+    },
+    "empty": {
+      "title": "Your library is empty",
+      "description": "Downloaded videos will appear here. Start downloading to build your collection!"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Configure your download preferences and application settings",
+    "sections": {
+      "download": {
+        "title": "Download Location",
+        "description": "Choose where your downloads will be saved",
+        "saveLocation": "Save Location",
+        "saveLocationDesc": "All downloaded files will be saved to this folder",
+        "browse": "Browse"
+      },
+      "downloadSettings": {
+        "title": "Download Settings",
+        "description": "Configure download quality and behavior",
+        "quality": "Default Quality",
+        "qualityDesc": "Preferred video quality for downloads",
+        "qualityBest": "Best Available",
+        "simultaneous": "Simultaneous Downloads",
+        "simultaneousDesc": "Maximum number of concurrent downloads",
+        "metadata": "Embed Metadata",
+        "metadataDesc": "Include title, artist, and other info in downloaded files",
+        "thumbnail": "Embed Thumbnail",
+        "thumbnailDesc": "Add thumbnail as album art to audio files"
+      },
+      "appearance": {
+        "title": "Appearance",
+        "description": "Customize the look and feel of the app",
+        "theme": "Theme",
+        "themeDesc": "Choose your preferred color scheme",
+        "themeDark": "Dark",
+        "themeLight": "Light",
+        "themeSystem": "System",
+        "notifications": "Notifications",
+        "notificationsDesc": "Show notifications when downloads complete",
+        "language": "Language",
+        "languageDesc": "Select your preferred language"
+      },
+      "about": {
+        "title": "About",
+        "description": "Application information and updates",
+        "autoUpdate": "Auto Update",
+        "autoUpdateDesc": "Automatically check for and install updates",
+        "version": "Ultimate Downloader",
+        "latestVersion": "You're running the latest version",
+        "checkUpdate": "Check for Updates"
+      }
+    }
+  },
+  "preview": {
+    "title": "Video Preview",
+    "quality": "Quality",
+    "format": "Format",
+    "size": "Size",
+    "video": "Video",
+    "audio": "Audio",
+    "options": {
+      "subtitles": "Download Subtitles",
+      "subtitlesDesc": "Download available subtitles if any",
+      "thumbnailSave": "Save Thumbnail",
+      "thumbnailSaveDesc": "Save the video thumbnail as a separate image",
+      "audioOnly": "Audio Only",
+      "audioOnlyDesc": "Extract audio without video"
+    },
+    "startDownload": "Start Download"
+  },
+  "common": {
+    "cancel": "Cancel",
+    "close": "Close",
+    "save": "Save",
+    "delete": "Delete",
+    "play": "Play",
+    "pause": "Pause",
+    "resume": "Resume",
+    "openFolder": "Open Folder"
+  }
+}
