@@ -168,7 +168,7 @@ export default function HomePage() {
   const [showPreview, setShowPreview] = useState(false);
   const [videoInfo, setVideoInfo] = useState<VideoInfo | null>(null);
   const [currentUrl, setCurrentUrl] = useState('');
-  const { downloads, addDownload, pauseDownload, resumeDownload, cancelDownload, updateProgress, updateStatus } =
+  const { downloads, addDownload, pauseDownload, resumeDownload, cancelDownload, updateDownload, updateDownloadId, updateStatus } =
     useDownloadStore();
   const { downloadPath, embedMetadata, embedThumbnail } = useSettingsStore();
 
@@ -190,23 +190,16 @@ export default function HomePage() {
       }>('download-progress', (event) => {
         const { id, progress, speed, eta, status, downloaded_size, total_size } = event.payload;
 
-        // Update download in store
+        // Update download in store with all fields
         const store = useDownloadStore.getState();
-        const download = store.downloads.find(d => d.id === id);
-        if (download) {
-          store.updateProgress(id, progress);
-          // Also update other fields
-          const updatedDownload = {
-            ...download,
-            progress,
-            speed,
-            eta,
-            status: status as any,
-            downloadedSize: downloaded_size,
-            size: total_size || download.size,
-          };
-          // This is a simplified update - in production, update the store properly
-        }
+        store.updateDownload(id, {
+          progress,
+          speed,
+          eta,
+          downloadedSize: downloaded_size,
+          size: total_size || undefined,
+          status: status as any,
+        });
       });
 
       const completeUnlisten = await listen<{ id: string; success: boolean }>('download-complete', (event) => {
@@ -233,7 +226,7 @@ export default function HomePage() {
     return () => {
       if (unlisten) unlisten();
     };
-  }, [updateProgress, updateStatus]);
+  }, [updateStatus]);
 
   const handleURLSubmit = useCallback(async (url: string) => {
     setIsLoading(true);
@@ -341,7 +334,13 @@ export default function HomePage() {
 
         const path = downloadPath || (await invoke<string>('get_default_download_path'));
 
-        await invoke('start_download', {
+        interface DownloadResponse {
+          success: boolean;
+          download_id?: string;
+          error?: string;
+        }
+
+        const response = await invoke<DownloadResponse>('start_download', {
           url: currentUrl,
           formatId,
           outputPath: path,
@@ -354,12 +353,19 @@ export default function HomePage() {
             audio_format: options.audioOnly ? 'mp3' : null,
           },
         });
+
+        // Update the download ID to match backend's ID
+        if (response.success && response.download_id) {
+          updateDownloadId(newDownload.id, response.download_id);
+        } else if (!response.success) {
+          updateStatus(newDownload.id, 'error');
+        }
       } catch (error) {
         console.error('Failed to start download:', error);
         updateStatus(newDownload.id, 'error');
       }
     },
-    [videoInfo, currentUrl, addDownload, downloadPath, embedMetadata, embedThumbnail, updateStatus]
+    [videoInfo, currentUrl, addDownload, downloadPath, embedMetadata, embedThumbnail, updateDownloadId, updateStatus]
   );
 
   const activeDownloads = downloads.filter(

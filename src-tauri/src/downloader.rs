@@ -4,6 +4,12 @@ use std::process::Stdio;
 use tokio::io::{AsyncBufReadExt, BufReader};
 use tokio::process::Command;
 
+#[cfg(windows)]
+use std::os::windows::process::CommandExt;
+
+#[cfg(windows)]
+const CREATE_NO_WINDOW: u32 = 0x08000000;
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DownloadOptions {
     pub embed_metadata: bool,
@@ -39,11 +45,15 @@ pub struct DownloadProgress {
 }
 
 pub async fn check_ytdlp_available() -> bool {
-    Command::new("yt-dlp")
-        .arg("--version")
+    let mut cmd = Command::new("yt-dlp");
+    cmd.arg("--version")
         .stdout(Stdio::null())
-        .stderr(Stdio::null())
-        .status()
+        .stderr(Stdio::null());
+
+    #[cfg(windows)]
+    cmd.creation_flags(CREATE_NO_WINDOW);
+
+    cmd.status()
         .await
         .map(|s| s.success())
         .unwrap_or(false)
@@ -62,13 +72,25 @@ where
     let download_id = uuid::Uuid::new_v4().to_string();
 
     // Build yt-dlp command
+    // For video formats, merge with best audio to ensure video has sound
+    let format_string = if format_id.starts_with("best") || format_id.contains("+") {
+        format_id.to_string()
+    } else {
+        // Try to merge video format with best audio
+        format!("{}+bestaudio/best", format_id)
+    };
+
     let mut args = vec![
         "--newline".to_string(),
         "--progress".to_string(),
         "--no-warnings".to_string(),
         "--no-playlist".to_string(),
+        "--no-write-comments".to_string(),
+        "--no-write-info-json".to_string(),
+        "--merge-output-format".to_string(),
+        "mp4".to_string(),
         "-f".to_string(),
-        format_id.to_string(),
+        format_string,
         "-o".to_string(),
         format!("{}/%(title)s.%(ext)s", output_path),
     ];
@@ -101,12 +123,16 @@ where
 
     args.push(url.to_string());
 
-    // Spawn yt-dlp process
-    let mut child = Command::new("yt-dlp")
-        .args(&args)
+    // Spawn yt-dlp process (hidden on Windows)
+    let mut cmd = Command::new("yt-dlp");
+    cmd.args(&args)
         .stdout(Stdio::piped())
-        .stderr(Stdio::piped())
-        .spawn()?;
+        .stderr(Stdio::piped());
+
+    #[cfg(windows)]
+    cmd.creation_flags(CREATE_NO_WINDOW);
+
+    let mut child = cmd.spawn()?;
 
     let stdout = child.stdout.take().expect("Failed to capture stdout");
     let stderr = child.stderr.take().expect("Failed to capture stderr");

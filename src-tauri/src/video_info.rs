@@ -2,6 +2,12 @@ use serde::{Deserialize, Serialize};
 use std::process::Stdio;
 use tokio::process::Command;
 
+#[cfg(windows)]
+use std::os::windows::process::CommandExt;
+
+#[cfg(windows)]
+const CREATE_NO_WINDOW: u32 = 0x08000000;
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct VideoInfo {
     pub id: String,
@@ -79,18 +85,21 @@ struct YtDlpFormat {
 }
 
 pub async fn fetch_info(url: &str) -> Result<VideoInfo, Box<dyn std::error::Error + Send + Sync>> {
-    let output = Command::new("yt-dlp")
-        .args([
-            "--dump-json",
-            "--no-download",
-            "--no-warnings",
-            "--no-playlist",
-            url,
-        ])
-        .stdout(Stdio::piped())
-        .stderr(Stdio::piped())
-        .output()
-        .await?;
+    let mut cmd = Command::new("yt-dlp");
+    cmd.args([
+        "--dump-json",
+        "--no-download",
+        "--no-warnings",
+        "--no-playlist",
+        url,
+    ])
+    .stdout(Stdio::piped())
+    .stderr(Stdio::piped());
+
+    #[cfg(windows)]
+    cmd.creation_flags(CREATE_NO_WINDOW);
+
+    let output = cmd.output().await?;
 
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
