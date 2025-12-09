@@ -1,6 +1,8 @@
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::process::Stdio;
+use std::path::PathBuf;
+use std::env;
 use tokio::io::{AsyncBufReadExt, BufReader};
 use tokio::process::Command;
 
@@ -9,6 +11,52 @@ use std::os::windows::process::CommandExt;
 
 #[cfg(windows)]
 const CREATE_NO_WINDOW: u32 = 0x08000000;
+
+/// Get path to bundled yt-dlp executable
+fn get_ytdlp_path() -> PathBuf {
+    let exe_dir = env::current_exe()
+        .ok()
+        .and_then(|p| p.parent().map(|p| p.to_path_buf()))
+        .unwrap_or_default();
+
+    let candidates = vec![
+        exe_dir.join("yt-dlp.exe"),
+        exe_dir.join("resources").join("yt-dlp.exe"),
+        PathBuf::from("yt-dlp.exe"),
+        PathBuf::from("yt-dlp"),
+    ];
+
+    for path in candidates {
+        if path.exists() {
+            return path;
+        }
+    }
+
+    PathBuf::from("yt-dlp")
+}
+
+/// Get path to bundled ffmpeg executable
+fn get_ffmpeg_path() -> PathBuf {
+    let exe_dir = env::current_exe()
+        .ok()
+        .and_then(|p| p.parent().map(|p| p.to_path_buf()))
+        .unwrap_or_default();
+
+    let candidates = vec![
+        exe_dir.join("ffmpeg.exe"),
+        exe_dir.join("resources").join("ffmpeg.exe"),
+        PathBuf::from("ffmpeg.exe"),
+        PathBuf::from("ffmpeg"),
+    ];
+
+    for path in candidates {
+        if path.exists() {
+            return path;
+        }
+    }
+
+    PathBuf::from("ffmpeg")
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DownloadOptions {
@@ -45,7 +93,8 @@ pub struct DownloadProgress {
 }
 
 pub async fn check_ytdlp_available() -> bool {
-    let mut cmd = Command::new("yt-dlp");
+    let ytdlp_path = get_ytdlp_path();
+    let mut cmd = Command::new(&ytdlp_path);
     cmd.arg("--version")
         .stdout(Stdio::null())
         .stderr(Stdio::null());
@@ -133,8 +182,20 @@ where
 
     args.push(url.to_string());
 
+    // Get bundled executable paths
+    let ytdlp_path = get_ytdlp_path();
+    let ffmpeg_path = get_ffmpeg_path();
+
+    // Add ffmpeg location if bundled
+    if ffmpeg_path.exists() {
+        if let Some(parent) = ffmpeg_path.parent() {
+            args.insert(0, parent.to_string_lossy().to_string());
+            args.insert(0, "--ffmpeg-location".to_string());
+        }
+    }
+
     // Spawn yt-dlp process (hidden on Windows)
-    let mut cmd = Command::new("yt-dlp");
+    let mut cmd = Command::new(&ytdlp_path);
     cmd.args(&args)
         .stdout(Stdio::piped())
         .stderr(Stdio::piped());

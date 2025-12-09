@@ -1,5 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::process::Stdio;
+use std::path::PathBuf;
+use std::env;
 use tokio::process::Command;
 
 #[cfg(windows)]
@@ -7,6 +9,29 @@ use std::os::windows::process::CommandExt;
 
 #[cfg(windows)]
 const CREATE_NO_WINDOW: u32 = 0x08000000;
+
+/// Get path to bundled yt-dlp executable
+fn get_ytdlp_path() -> PathBuf {
+    let exe_dir = env::current_exe()
+        .ok()
+        .and_then(|p| p.parent().map(|p| p.to_path_buf()))
+        .unwrap_or_default();
+
+    let candidates = vec![
+        exe_dir.join("yt-dlp.exe"),
+        exe_dir.join("resources").join("yt-dlp.exe"),
+        PathBuf::from("yt-dlp.exe"),
+        PathBuf::from("yt-dlp"),
+    ];
+
+    for path in candidates {
+        if path.exists() {
+            return path;
+        }
+    }
+
+    PathBuf::from("yt-dlp")
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct VideoInfo {
@@ -87,7 +112,8 @@ struct YtDlpFormat {
 }
 
 pub async fn fetch_info(url: &str) -> Result<VideoInfo, Box<dyn std::error::Error + Send + Sync>> {
-    let mut cmd = Command::new("yt-dlp");
+    let ytdlp_path = get_ytdlp_path();
+    let mut cmd = Command::new(&ytdlp_path);
     cmd.args([
         "--dump-json",
         "--no-download",
