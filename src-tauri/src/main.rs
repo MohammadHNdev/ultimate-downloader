@@ -79,7 +79,8 @@ async fn start_download(
     }
 
     let download_id_clone = download_id.clone();
-    let app_clone = app.clone();
+    let app_for_callback = app.clone();
+    let app_for_result = app.clone();
 
     // Spawn download task
     tokio::spawn(async move {
@@ -92,7 +93,7 @@ async fn start_download(
                 // Update progress in state
                 let downloads = downloads.clone();
                 let progress_clone = progress.clone();
-                let app = app_clone.clone();
+                let app = app_for_callback.clone();
                 tokio::spawn(async move {
                     let mut downloads = downloads.lock().await;
                     downloads.insert(progress_clone.id.clone(), progress_clone);
@@ -105,7 +106,7 @@ async fn start_download(
         .await
         {
             Ok(_) => {
-                let _ = app_clone.emit(
+                let _ = app_for_result.emit(
                     "download-complete",
                     serde_json::json!({
                         "id": download_id_clone,
@@ -114,7 +115,7 @@ async fn start_download(
                 );
             }
             Err(e) => {
-                let _ = app_clone.emit(
+                let _ = app_for_result.emit(
                     "download-error",
                     serde_json::json!({
                         "id": download_id_clone,
