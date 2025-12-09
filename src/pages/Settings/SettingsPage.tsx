@@ -15,6 +15,7 @@ import {
   Info24Regular,
   CheckmarkCircle24Regular,
 } from '@fluentui/react-icons';
+// Removed Button import - not needed anymore
 import { motion } from 'framer-motion';
 import { useSettingsStore, QualityOption, ThemeOption } from '../../stores/settingsStore';
 
@@ -145,17 +146,11 @@ export default function SettingsPage() {
     downloadPath,
     defaultQuality,
     theme,
-    autoUpdate,
-    notifications,
-    simultaneousDownloads,
     embedMetadata,
     embedThumbnail,
     setDownloadPath,
     setDefaultQuality,
     setTheme,
-    setAutoUpdate,
-    setNotifications,
-    setSimultaneousDownloads,
     setEmbedMetadata,
     setEmbedThumbnail,
   } = useSettingsStore();
@@ -273,24 +268,6 @@ export default function SettingsPage() {
 
           <div style={styles.settingRow}>
             <div style={styles.settingInfo}>
-              <Text style={styles.settingLabel}>{t('settings.sections.downloadSettings.simultaneous')}</Text>
-              <Text style={styles.settingDescription}>{t('settings.sections.downloadSettings.simultaneousDesc')}</Text>
-            </div>
-            <Dropdown
-              style={styles.settingControl}
-              value={String(simultaneousDownloads)}
-              selectedOptions={[String(simultaneousDownloads)]}
-              onOptionSelect={(_, data) => setSimultaneousDownloads(Number(data.optionValue))}
-            >
-              <Option value="1">1</Option>
-              <Option value="2">2</Option>
-              <Option value="3">3</Option>
-              <Option value="5">5</Option>
-            </Dropdown>
-          </div>
-
-          <div style={styles.settingRow}>
-            <div style={styles.settingInfo}>
               <Text style={styles.settingLabel}>{t('settings.sections.downloadSettings.metadata')}</Text>
               <Text style={styles.settingDescription}>{t('settings.sections.downloadSettings.metadataDesc')}</Text>
             </div>
@@ -345,16 +322,6 @@ export default function SettingsPage() {
             </Dropdown>
           </div>
 
-          <div style={styles.settingRow}>
-            <div style={styles.settingInfo}>
-              <Text style={styles.settingLabel}>{t('settings.sections.appearance.notifications')}</Text>
-              <Text style={styles.settingDescription}>{t('settings.sections.appearance.notificationsDesc')}</Text>
-            </div>
-            <Switch
-              checked={notifications}
-              onChange={(_, data) => setNotifications(data.checked)}
-            />
-          </div>
         </motion.div>
 
         <motion.div
@@ -373,26 +340,12 @@ export default function SettingsPage() {
             </div>
           </div>
 
-          <div style={styles.settingRow}>
-            <div style={styles.settingInfo}>
-              <Text style={styles.settingLabel}>{t('settings.sections.about.autoUpdate')}</Text>
-              <Text style={styles.settingDescription}>{t('settings.sections.about.autoUpdateDesc')}</Text>
-            </div>
-            <Switch
-              checked={autoUpdate}
-              onChange={(_, data) => setAutoUpdate(data.checked)}
-            />
-          </div>
-
           <div style={styles.versionInfo}>
             <CheckmarkCircle24Regular style={{ color: '#4ADE80' }} />
             <div style={styles.versionText}>
-              <Text style={styles.versionNumber}>{t('settings.sections.about.version')} v1.4.2</Text>
+              <Text style={styles.versionNumber}>{t('settings.sections.about.version')} v1.4.3</Text>
               <Text style={styles.versionLabel}>{t('settings.sections.about.latestVersion')}</Text>
             </div>
-            <Button style={styles.checkUpdateBtn} appearance="subtle">
-              {t('settings.sections.about.checkUpdate')}
-            </Button>
           </div>
         </motion.div>
       </div>
