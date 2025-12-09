@@ -87,6 +87,11 @@ where
         "--no-playlist".to_string(),
         "--no-write-comments".to_string(),
         "--no-write-info-json".to_string(),
+        // Speed optimizations
+        "--concurrent-fragments".to_string(),
+        "4".to_string(),
+        "--buffer-size".to_string(),
+        "16K".to_string(),
         "--merge-output-format".to_string(),
         "mp4".to_string(),
         "-f".to_string(),
