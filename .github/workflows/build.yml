@@ -47,17 +47,10 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Create resources directory
-        run: mkdir src-tauri/resources
-        shell: pwsh
-
-      - name: Install yt-dlp (Windows)
+      - name: Download yt-dlp and ffmpeg
         run: |
+          New-Item -ItemType Directory -Force -Path "src-tauri/resources"
           Invoke-WebRequest -Uri "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe" -OutFile "src-tauri/resources/yt-dlp.exe"
-        shell: pwsh
-
-      - name: Install ffmpeg (Windows)
-        run: |
           Invoke-WebRequest -Uri "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip" -OutFile "ffmpeg.zip"
           Expand-Archive -Path "ffmpeg.zip" -DestinationPath "ffmpeg-temp" -Force
           Copy-Item "ffmpeg-temp/ffmpeg-master-latest-win64-gpl/bin/ffmpeg.exe" -Destination "src-tauri/resources/ffmpeg.exe"
@@ -118,17 +111,10 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Create resources directory
-        run: mkdir src-tauri/resources
-        shell: pwsh
-
-      - name: Install yt-dlp (Windows)
+      - name: Download yt-dlp and ffmpeg
         run: |
+          New-Item -ItemType Directory -Force -Path "src-tauri/resources"
           Invoke-WebRequest -Uri "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe" -OutFile "src-tauri/resources/yt-dlp.exe"
-        shell: pwsh
-
-      - name: Install ffmpeg (Windows)
-        run: |
           Invoke-WebRequest -Uri "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip" -OutFile "ffmpeg.zip"
           Expand-Archive -Path "ffmpeg.zip" -DestinationPath "ffmpeg-temp" -Force
           Copy-Item "ffmpeg-temp/ffmpeg-master-latest-win64-gpl/bin/ffmpeg.exe" -Destination "src-tauri/resources/ffmpeg.exe"
