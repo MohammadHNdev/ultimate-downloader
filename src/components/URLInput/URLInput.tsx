@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { makeStyles, Spinner } from '@fluentui/react-components';
+import { Spinner } from '@fluentui/react-components';
 import {
   Link24Regular,
   ArrowDownload24Filled,
@@ -8,14 +8,14 @@ import {
 } from '@fluentui/react-icons';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const useStyles = makeStyles({
+const styles = {
   root: {
-    position: 'relative',
+    position: 'relative' as const,
     width: '100%',
     maxWidth: '720px',
   },
   inputWrapper: {
-    position: 'relative',
+    position: 'relative' as const,
     display: 'flex',
     alignItems: 'center',
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
@@ -23,21 +23,19 @@ const useStyles = makeStyles({
     border: '1px solid rgba(255, 255, 255, 0.1)',
     padding: '4px',
     transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-    '&:hover': {
-      backgroundColor: 'rgba(255, 255, 255, 0.07)',
-      borderColor: 'rgba(255, 255, 255, 0.15)',
-    },
-    '&:focus-within': {
-      backgroundColor: 'rgba(255, 255, 255, 0.08)',
-      borderColor: '#6067D6',
-      boxShadow: '0 0 0 3px rgba(96, 103, 214, 0.15)',
-    },
+  },
+  inputWrapperHover: {
+    backgroundColor: 'rgba(255, 255, 255, 0.07)',
+    borderColor: 'rgba(255, 255, 255, 0.15)',
+  },
+  inputWrapperFocus: {
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    borderColor: '#6067D6',
+    boxShadow: '0 0 0 3px rgba(96, 103, 214, 0.15)',
   },
   inputWrapperError: {
-    borderColor: '#EF4444 !important',
-    '&:focus-within': {
-      boxShadow: '0 0 0 3px rgba(239, 68, 68, 0.15)',
-    },
+    borderColor: '#EF4444',
+    boxShadow: '0 0 0 3px rgba(239, 68, 68, 0.15)',
   },
   iconWrapper: {
     display: 'flex',
@@ -57,9 +55,6 @@ const useStyles = makeStyles({
     fontSize: '15px',
     fontFamily: 'inherit',
     outline: 'none',
-    '&::placeholder': {
-      color: 'rgba(255, 255, 255, 0.35)',
-    },
   },
   actions: {
     display: 'flex',
@@ -79,10 +74,6 @@ const useStyles = makeStyles({
     color: 'rgba(255, 255, 255, 0.5)',
     cursor: 'pointer',
     transition: 'all 0.2s ease',
-    '&:hover': {
-      backgroundColor: 'rgba(255, 255, 255, 0.1)',
-      color: '#FFFFFF',
-    },
   },
   downloadButton: {
     display: 'flex',
@@ -101,22 +92,13 @@ const useStyles = makeStyles({
     cursor: 'pointer',
     gap: '8px',
     transition: 'all 0.2s ease',
-    '&:hover': {
-      background: 'linear-gradient(135deg, #7075E3 0%, #8285ED 100%)',
-      transform: 'translateY(-1px)',
-      boxShadow: '0 4px 16px rgba(96, 103, 214, 0.4)',
-    },
-    '&:active': {
-      transform: 'translateY(0)',
-    },
-    '&:disabled': {
-      opacity: 0.5,
-      cursor: 'not-allowed',
-      transform: 'none',
-    },
+  },
+  downloadButtonDisabled: {
+    opacity: 0.5,
+    cursor: 'not-allowed',
   },
   errorMessage: {
-    position: 'absolute',
+    position: 'absolute' as const,
     bottom: '-28px',
     left: '16px',
     color: '#EF4444',
@@ -126,7 +108,7 @@ const useStyles = makeStyles({
     gap: '6px',
   },
   platformBadge: {
-    position: 'absolute',
+    position: 'absolute' as const,
     top: '-12px',
     right: '16px',
     display: 'flex',
@@ -144,7 +126,7 @@ const useStyles = makeStyles({
     height: '16px',
     borderRadius: '4px',
   },
-});
+};
 
 interface URLInputProps {
   onSubmit: (url: string) => void;
@@ -174,7 +156,6 @@ function detectPlatform(url: string) {
 }
 
 export default function URLInput({ onSubmit, isLoading = false }: URLInputProps) {
-  const styles = useStyles();
   const [url, setUrl] = useState('');
   const [error, setError] = useState('');
   const [platform, setPlatform] = useState<ReturnType<typeof detectPlatform>>(null);
@@ -227,19 +208,17 @@ export default function URLInput({ onSubmit, isLoading = false }: URLInputProps)
   );
 
   return (
-    <div className={styles.root}>
+    <div style={styles.root}>
       <AnimatePresence>
         {platform && (
           <motion.div
-            className={styles.platformBadge}
+            style={{ ...styles.platformBadge, color: platform.color }}
             initial={{ opacity: 0, y: -10, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10, scale: 0.9 }}
-            style={{ color: platform.color }}
           >
             <span
-              className={styles.platformIcon}
-              style={{ backgroundColor: platform.color }}
+              style={{ ...styles.platformIcon, backgroundColor: platform.color }}
             />
             {platform.name}
           </motion.div>
@@ -247,17 +226,20 @@ export default function URLInput({ onSubmit, isLoading = false }: URLInputProps)
       </AnimatePresence>
 
       <motion.div
-        className={`${styles.inputWrapper} ${error ? styles.inputWrapperError : ''}`}
+        style={{
+          ...styles.inputWrapper,
+          ...(error ? styles.inputWrapperError : {}),
+        }}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
       >
-        <div className={styles.iconWrapper}>
+        <div style={styles.iconWrapper}>
           <Link24Regular />
         </div>
 
         <input
-          className={styles.input}
+          style={styles.input}
           type="text"
           placeholder="Paste video URL here... (YouTube, Instagram, TikTok, etc.)"
           value={url}
@@ -266,11 +248,11 @@ export default function URLInput({ onSubmit, isLoading = false }: URLInputProps)
           disabled={isLoading}
         />
 
-        <div className={styles.actions}>
+        <div style={styles.actions}>
           <AnimatePresence>
             {url && (
               <motion.button
-                className={styles.actionButton}
+                style={styles.actionButton}
                 onClick={handleClear}
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -285,7 +267,7 @@ export default function URLInput({ onSubmit, isLoading = false }: URLInputProps)
 
           {!url && (
             <motion.button
-              className={styles.actionButton}
+              style={styles.actionButton}
               onClick={handlePaste}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
@@ -295,7 +277,10 @@ export default function URLInput({ onSubmit, isLoading = false }: URLInputProps)
           )}
 
           <motion.button
-            className={styles.downloadButton}
+            style={{
+              ...styles.downloadButton,
+              ...(isLoading || !url ? styles.downloadButtonDisabled : {}),
+            }}
             onClick={handleSubmit}
             disabled={isLoading || !url}
             whileHover={{ scale: 1.02 }}
@@ -316,7 +301,7 @@ export default function URLInput({ onSubmit, isLoading = false }: URLInputProps)
       <AnimatePresence>
         {error && (
           <motion.div
-            className={styles.errorMessage}
+            style={styles.errorMessage}
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}

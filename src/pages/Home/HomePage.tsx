@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { makeStyles, Text } from '@fluentui/react-components';
+import { Text } from '@fluentui/react-components';
 import { motion, AnimatePresence } from 'framer-motion';
 import URLInput from '../../components/URLInput/URLInput';
 import DownloadCard, { DownloadItem } from '../../components/DownloadCard/DownloadCard';
@@ -8,18 +8,18 @@ import VideoPreviewModal, {
 } from '../../components/VideoPreview/VideoPreviewModal';
 import { useDownloadStore } from '../../stores/downloadStore';
 
-const useStyles = makeStyles({
+const styles = {
   root: {
     display: 'flex',
-    flexDirection: 'column',
+    flexDirection: 'column' as const,
     height: '100%',
     gap: '32px',
   },
   hero: {
     display: 'flex',
-    flexDirection: 'column',
+    flexDirection: 'column' as const,
     alignItems: 'center',
-    textAlign: 'center',
+    textAlign: 'center' as const,
     paddingTop: '48px',
     paddingBottom: '32px',
     gap: '24px',
@@ -29,6 +29,7 @@ const useStyles = makeStyles({
     fontWeight: 700,
     lineHeight: 1.1,
     letterSpacing: '-0.02em',
+    color: '#FFFFFF',
   },
   heroGradient: {
     background: 'linear-gradient(135deg, #6067D6 0%, #00D9FF 50%, #FF6B9D 100%)',
@@ -60,10 +61,6 @@ const useStyles = makeStyles({
     fontSize: '18px',
     transition: 'all 0.2s ease',
     cursor: 'default',
-    '&:hover': {
-      backgroundColor: 'rgba(255, 255, 255, 0.1)',
-      transform: 'translateY(-2px)',
-    },
   },
   inputSection: {
     display: 'flex',
@@ -73,9 +70,9 @@ const useStyles = makeStyles({
   downloadsSection: {
     flex: 1,
     display: 'flex',
-    flexDirection: 'column',
+    flexDirection: 'column' as const,
     gap: '16px',
-    overflow: 'auto',
+    overflow: 'auto' as const,
     paddingRight: '8px',
   },
   sectionHeader: {
@@ -90,17 +87,17 @@ const useStyles = makeStyles({
   },
   downloadsList: {
     display: 'flex',
-    flexDirection: 'column',
+    flexDirection: 'column' as const,
     gap: '12px',
   },
   emptyState: {
     display: 'flex',
-    flexDirection: 'column',
+    flexDirection: 'column' as const,
     alignItems: 'center',
     justifyContent: 'center',
     padding: '48px',
     gap: '16px',
-    textAlign: 'center',
+    textAlign: 'center' as const,
   },
   emptyIcon: {
     fontSize: '48px',
@@ -122,7 +119,7 @@ const useStyles = makeStyles({
     color: '#9597F5',
     fontWeight: 600,
   },
-});
+};
 
 const platforms = [
   { name: 'YouTube', icon: '▶️', color: '#FF0000' },
@@ -158,7 +155,6 @@ const mockVideoInfo: VideoInfo = {
 };
 
 export default function HomePage() {
-  const styles = useStyles();
   const [isLoading, setIsLoading] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [videoInfo, setVideoInfo] = useState<VideoInfo | null>(null);
@@ -220,25 +216,25 @@ export default function HomePage() {
   );
 
   return (
-    <div className={styles.root}>
+    <div style={styles.root}>
       <motion.div
-        className={styles.hero}
+        style={styles.hero}
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
       >
         <motion.h1
-          className={styles.heroTitle}
+          style={styles.heroTitle}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
         >
           Download from{' '}
-          <span className={styles.heroGradient}>Anywhere</span>
+          <span style={styles.heroGradient}>Anywhere</span>
         </motion.h1>
 
         <motion.p
-          className={styles.heroSubtitle}
+          style={styles.heroSubtitle}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
@@ -248,7 +244,7 @@ export default function HomePage() {
         </motion.p>
 
         <motion.div
-          className={styles.platformLogos}
+          style={styles.platformLogos}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
@@ -256,7 +252,7 @@ export default function HomePage() {
           {platforms.map((platform, index) => (
             <motion.div
               key={platform.name}
-              className={styles.platformLogo}
+              style={styles.platformLogo}
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3, delay: 0.4 + index * 0.05 }}
@@ -277,28 +273,28 @@ export default function HomePage() {
         </motion.div>
       </motion.div>
 
-      <div className={styles.inputSection}>
+      <div style={styles.inputSection}>
         <URLInput onSubmit={handleURLSubmit} isLoading={isLoading} />
       </div>
 
       {downloads.length > 0 && (
-        <div className={styles.downloadsSection}>
-          <div className={styles.sectionHeader}>
-            <Text className={styles.sectionTitle}>Downloads</Text>
-            <div className={styles.stats}>
-              <span className={styles.stat}>
-                Active: <span className={styles.statValue}>{activeDownloads.length}</span>
+        <div style={styles.downloadsSection}>
+          <div style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Downloads</Text>
+            <div style={styles.stats}>
+              <span style={styles.stat}>
+                Active: <span style={styles.statValue}>{activeDownloads.length}</span>
               </span>
-              <span className={styles.stat}>
+              <span style={styles.stat}>
                 Completed:{' '}
-                <span className={styles.statValue}>
+                <span style={styles.statValue}>
                   {downloads.filter((d) => d.status === 'completed').length}
                 </span>
               </span>
             </div>
           </div>
 
-          <div className={styles.downloadsList}>
+          <div style={styles.downloadsList}>
             <AnimatePresence>
               {downloads.map((download) => (
                 <DownloadCard
@@ -319,13 +315,13 @@ export default function HomePage() {
 
       {downloads.length === 0 && (
         <motion.div
-          className={styles.emptyState}
+          style={styles.emptyState}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
         >
-          <span className={styles.emptyIcon}>📥</span>
-          <span className={styles.emptyText}>
+          <span style={styles.emptyIcon}>📥</span>
+          <span style={styles.emptyText}>
             Your downloads will appear here. Paste a URL above to get started!
           </span>
         </motion.div>

@@ -1,4 +1,4 @@
-import { makeStyles, Text } from '@fluentui/react-components';
+import { Text } from '@fluentui/react-components';
 import {
   Subtract20Regular,
   Square20Regular,
@@ -6,7 +6,7 @@ import {
 } from '@fluentui/react-icons';
 import { motion } from 'framer-motion';
 
-const useStyles = makeStyles({
+const styles = {
   root: {
     display: 'flex',
     alignItems: 'center',
@@ -16,7 +16,7 @@ const useStyles = makeStyles({
     borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
     paddingLeft: '16px',
     paddingRight: '0',
-    userSelect: 'none',
+    userSelect: 'none' as const,
   },
   dragRegion: {
     flex: 1,
@@ -61,22 +61,10 @@ const useStyles = makeStyles({
     color: 'rgba(255, 255, 255, 0.7)',
     cursor: 'pointer',
     transition: 'all 0.15s ease',
-    '&:hover': {
-      backgroundColor: 'rgba(255, 255, 255, 0.1)',
-      color: '#FFFFFF',
-    },
   },
-  closeButton: {
-    '&:hover': {
-      backgroundColor: '#E81123',
-      color: '#FFFFFF',
-    },
-  },
-});
+};
 
 export default function TitleBar() {
-  const styles = useStyles();
-
   const handleMinimize = async () => {
     const { getCurrentWindow } = await import('@tauri-apps/api/window');
     await getCurrentWindow().minimize();
@@ -99,41 +87,41 @@ export default function TitleBar() {
   };
 
   return (
-    <div className={styles.root}>
-      <div className={styles.dragRegion} data-tauri-drag-region>
-        <div className={styles.logo}>
+    <div style={styles.root}>
+      <div style={styles.dragRegion} data-tauri-drag-region>
+        <div style={styles.logo}>
           <motion.div
-            className={styles.logoIcon}
+            style={styles.logoIcon}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
             ⬇
           </motion.div>
-          <Text className={styles.title}>Ultimate Downloader</Text>
+          <Text style={styles.title}>Ultimate Downloader</Text>
         </div>
       </div>
 
-      <div className={styles.controls}>
+      <div style={styles.controls}>
         <motion.button
-          className={styles.controlButton}
+          style={styles.controlButton}
           onClick={handleMinimize}
-          whileHover={{ scale: 1.05 }}
+          whileHover={{ scale: 1.05, backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
           whileTap={{ scale: 0.95 }}
         >
           <Subtract20Regular />
         </motion.button>
         <motion.button
-          className={styles.controlButton}
+          style={styles.controlButton}
           onClick={handleMaximize}
-          whileHover={{ scale: 1.05 }}
+          whileHover={{ scale: 1.05, backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
           whileTap={{ scale: 0.95 }}
         >
           <Square20Regular />
         </motion.button>
         <motion.button
-          className={`${styles.controlButton} ${styles.closeButton}`}
+          style={styles.controlButton}
           onClick={handleClose}
-          whileHover={{ scale: 1.05 }}
+          whileHover={{ scale: 1.05, backgroundColor: '#E81123' }}
           whileTap={{ scale: 0.95 }}
         >
           <Dismiss20Regular />

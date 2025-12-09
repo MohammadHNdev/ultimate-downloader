@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import {
-  makeStyles,
   Text,
   Input,
   Dropdown,
@@ -16,16 +15,16 @@ import {
 } from '@fluentui/react-icons';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const useStyles = makeStyles({
+const styles = {
   root: {
     display: 'flex',
-    flexDirection: 'column',
+    flexDirection: 'column' as const,
     height: '100%',
     gap: '24px',
   },
   header: {
     display: 'flex',
-    flexDirection: 'column',
+    flexDirection: 'column' as const,
     gap: '16px',
   },
   titleRow: {
@@ -50,15 +49,15 @@ const useStyles = makeStyles({
   searchWrapper: {
     flex: 1,
     maxWidth: '400px',
-    position: 'relative',
+    position: 'relative' as const,
   },
   searchIcon: {
-    position: 'absolute',
+    position: 'absolute' as const,
     left: '12px',
     top: '50%',
     transform: 'translateY(-50%)',
     color: 'rgba(255, 255, 255, 0.4)',
-    pointerEvents: 'none',
+    pointerEvents: 'none' as const,
   },
   searchInput: {
     width: '100%',
@@ -89,7 +88,7 @@ const useStyles = makeStyles({
   },
   content: {
     flex: 1,
-    overflow: 'auto',
+    overflow: 'auto' as const,
     paddingRight: '8px',
   },
   grid: {
@@ -99,37 +98,32 @@ const useStyles = makeStyles({
   },
   list: {
     display: 'flex',
-    flexDirection: 'column',
+    flexDirection: 'column' as const,
     gap: '8px',
   },
   gridItem: {
     display: 'flex',
-    flexDirection: 'column',
+    flexDirection: 'column' as const,
     backgroundColor: 'rgba(255, 255, 255, 0.03)',
     borderRadius: '12px',
     border: '1px solid rgba(255, 255, 255, 0.06)',
-    overflow: 'hidden',
+    overflow: 'hidden' as const,
     cursor: 'pointer',
     transition: 'all 0.2s ease',
-    '&:hover': {
-      backgroundColor: 'rgba(255, 255, 255, 0.05)',
-      borderColor: 'rgba(255, 255, 255, 0.1)',
-      transform: 'translateY(-2px)',
-    },
   },
   gridThumbnail: {
-    position: 'relative',
+    position: 'relative' as const,
     aspectRatio: '16/9',
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    overflow: 'hidden',
+    overflow: 'hidden' as const,
   },
   gridThumbnailImage: {
     width: '100%',
     height: '100%',
-    objectFit: 'cover',
+    objectFit: 'cover' as const,
   },
   playOverlay: {
-    position: 'absolute',
+    position: 'absolute' as const,
     inset: 0,
     display: 'flex',
     alignItems: 'center',
@@ -137,11 +131,6 @@ const useStyles = makeStyles({
     backgroundColor: 'rgba(0, 0, 0, 0.4)',
     opacity: 0,
     transition: 'opacity 0.2s ease',
-  },
-  gridItemHover: {
-    '&:hover $playOverlay': {
-      opacity: 1,
-    },
   },
   playButton: {
     display: 'flex',
@@ -156,7 +145,7 @@ const useStyles = makeStyles({
     cursor: 'pointer',
   },
   duration: {
-    position: 'absolute',
+    position: 'absolute' as const,
     bottom: '8px',
     right: '8px',
     padding: '2px 6px',
@@ -169,16 +158,16 @@ const useStyles = makeStyles({
   gridInfo: {
     padding: '12px',
     display: 'flex',
-    flexDirection: 'column',
+    flexDirection: 'column' as const,
     gap: '4px',
   },
   gridTitle: {
     fontSize: '14px',
     fontWeight: 500,
     color: '#FFFFFF',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
+    overflow: 'hidden' as const,
+    textOverflow: 'ellipsis' as const,
+    whiteSpace: 'nowrap' as const,
   },
   gridMeta: {
     fontSize: '12px',
@@ -197,23 +186,19 @@ const useStyles = makeStyles({
     border: '1px solid rgba(255, 255, 255, 0.06)',
     cursor: 'pointer',
     transition: 'all 0.2s ease',
-    '&:hover': {
-      backgroundColor: 'rgba(255, 255, 255, 0.05)',
-      borderColor: 'rgba(255, 255, 255, 0.1)',
-    },
   },
   listThumbnail: {
     width: '120px',
     height: '68px',
     borderRadius: '8px',
-    overflow: 'hidden',
+    overflow: 'hidden' as const,
     flexShrink: 0,
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
   },
   listThumbnailImage: {
     width: '100%',
     height: '100%',
-    objectFit: 'cover',
+    objectFit: 'cover' as const,
   },
   listInfo: {
     flex: 1,
@@ -223,9 +208,9 @@ const useStyles = makeStyles({
     fontSize: '14px',
     fontWeight: 500,
     color: '#FFFFFF',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
+    overflow: 'hidden' as const,
+    textOverflow: 'ellipsis' as const,
+    whiteSpace: 'nowrap' as const,
   },
   listMeta: {
     fontSize: '12px',
@@ -249,19 +234,15 @@ const useStyles = makeStyles({
     color: 'rgba(255, 255, 255, 0.5)',
     cursor: 'pointer',
     transition: 'all 0.2s ease',
-    '&:hover': {
-      backgroundColor: 'rgba(255, 255, 255, 0.1)',
-      color: '#FFFFFF',
-    },
   },
   emptyState: {
     display: 'flex',
-    flexDirection: 'column',
+    flexDirection: 'column' as const,
     alignItems: 'center',
     justifyContent: 'center',
     flex: 1,
     gap: '16px',
-    textAlign: 'center',
+    textAlign: 'center' as const,
     padding: '48px',
   },
   emptyIcon: {
@@ -278,7 +259,7 @@ const useStyles = makeStyles({
     color: 'rgba(255, 255, 255, 0.5)',
     maxWidth: '400px',
   },
-});
+};
 
 interface LibraryItem {
   id: string;
@@ -349,7 +330,6 @@ type ViewMode = 'grid' | 'list';
 type SortOption = 'newest' | 'oldest' | 'name' | 'size';
 
 export default function LibraryPage() {
-  const styles = useStyles();
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('newest');
@@ -377,25 +357,25 @@ export default function LibraryPage() {
   });
 
   return (
-    <div className={styles.root}>
+    <div style={styles.root}>
       <motion.div
-        className={styles.header}
+        style={styles.header}
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
       >
-        <div className={styles.titleRow}>
-          <Text className={styles.title}>Library</Text>
-          <Text className={styles.stats}>
+        <div style={styles.titleRow}>
+          <Text style={styles.title}>Library</Text>
+          <Text style={styles.stats}>
             {library.length} videos • {library.reduce((acc, item) => acc + parseFloat(item.size), 0).toFixed(1)} GB
           </Text>
         </div>
 
-        <div className={styles.controls}>
-          <div className={styles.searchWrapper}>
-            <Search24Regular className={styles.searchIcon} />
+        <div style={styles.controls}>
+          <div style={styles.searchWrapper}>
+            <Search24Regular style={styles.searchIcon} />
             <Input
-              className={styles.searchInput}
+              style={styles.searchInput}
               placeholder="Search your library..."
               value={searchQuery}
               onChange={(_, data) => setSearchQuery(data.value)}
@@ -414,9 +394,12 @@ export default function LibraryPage() {
             <Option value="size">Size</Option>
           </Dropdown>
 
-          <div className={styles.viewToggle}>
+          <div style={styles.viewToggle}>
             <motion.button
-              className={`${styles.viewButton} ${viewMode === 'grid' ? styles.viewButtonActive : ''}`}
+              style={{
+                ...styles.viewButton,
+                ...(viewMode === 'grid' ? styles.viewButtonActive : {}),
+              }}
               onClick={() => setViewMode('grid')}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -424,7 +407,10 @@ export default function LibraryPage() {
               <Grid24Regular />
             </motion.button>
             <motion.button
-              className={`${styles.viewButton} ${viewMode === 'list' ? styles.viewButtonActive : ''}`}
+              style={{
+                ...styles.viewButton,
+                ...(viewMode === 'list' ? styles.viewButtonActive : {}),
+              }}
               onClick={() => setViewMode('list')}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -435,48 +421,48 @@ export default function LibraryPage() {
         </div>
       </motion.div>
 
-      <div className={styles.content}>
+      <div style={styles.content}>
         {sortedLibrary.length === 0 ? (
-          <div className={styles.emptyState}>
-            <span className={styles.emptyIcon}>📚</span>
-            <Text className={styles.emptyTitle}>Your library is empty</Text>
-            <Text className={styles.emptyText}>
+          <div style={styles.emptyState}>
+            <span style={styles.emptyIcon}>📚</span>
+            <Text style={styles.emptyTitle}>Your library is empty</Text>
+            <Text style={styles.emptyText}>
               Downloaded videos will appear here. Start downloading to build your collection!
             </Text>
           </div>
         ) : viewMode === 'grid' ? (
-          <div className={styles.grid}>
+          <div style={styles.grid}>
             <AnimatePresence>
               {sortedLibrary.map((item, index) => (
                 <motion.div
                   key={item.id}
-                  className={styles.gridItem}
+                  style={styles.gridItem}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ duration: 0.3, delay: index * 0.05 }}
                   whileHover={{ y: -4 }}
                 >
-                  <div className={styles.gridThumbnail}>
+                  <div style={styles.gridThumbnail}>
                     <img
-                      className={styles.gridThumbnailImage}
+                      style={styles.gridThumbnailImage}
                       src={item.thumbnail}
                       alt={item.title}
                     />
                     <motion.div
-                      className={styles.playOverlay}
+                      style={styles.playOverlay}
                       initial={{ opacity: 0 }}
                       whileHover={{ opacity: 1 }}
                     >
-                      <button className={styles.playButton}>
+                      <button style={styles.playButton}>
                         <Play24Filled />
                       </button>
                     </motion.div>
-                    <span className={styles.duration}>{item.duration}</span>
+                    <span style={styles.duration}>{item.duration}</span>
                   </div>
-                  <div className={styles.gridInfo}>
-                    <Text className={styles.gridTitle}>{item.title}</Text>
-                    <div className={styles.gridMeta}>
+                  <div style={styles.gridInfo}>
+                    <Text style={styles.gridTitle}>{item.title}</Text>
+                    <div style={styles.gridMeta}>
                       <span>{item.channel}</span>
                       <span>•</span>
                       <span>{item.size}</span>
@@ -487,47 +473,47 @@ export default function LibraryPage() {
             </AnimatePresence>
           </div>
         ) : (
-          <div className={styles.list}>
+          <div style={styles.list}>
             <AnimatePresence>
               {sortedLibrary.map((item, index) => (
                 <motion.div
                   key={item.id}
-                  className={styles.listItem}
+                  style={styles.listItem}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 20 }}
                   transition={{ duration: 0.3, delay: index * 0.03 }}
                 >
-                  <div className={styles.listThumbnail}>
+                  <div style={styles.listThumbnail}>
                     <img
-                      className={styles.listThumbnailImage}
+                      style={styles.listThumbnailImage}
                       src={item.thumbnail}
                       alt={item.title}
                     />
                   </div>
-                  <div className={styles.listInfo}>
-                    <Text className={styles.listTitle}>{item.title}</Text>
-                    <Text className={styles.listMeta}>
+                  <div style={styles.listInfo}>
+                    <Text style={styles.listTitle}>{item.title}</Text>
+                    <Text style={styles.listMeta}>
                       {item.channel} • {item.duration} • {item.size} • {item.platform}
                     </Text>
                   </div>
-                  <div className={styles.listActions}>
+                  <div style={styles.listActions}>
                     <motion.button
-                      className={styles.actionButton}
+                      style={styles.actionButton}
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
                     >
                       <Play24Filled />
                     </motion.button>
                     <motion.button
-                      className={styles.actionButton}
+                      style={styles.actionButton}
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
                     >
                       <Folder24Regular />
                     </motion.button>
                     <motion.button
-                      className={styles.actionButton}
+                      style={styles.actionButton}
                       whileHover={{ scale: 1.1, color: '#EF4444' }}
                       whileTap={{ scale: 0.9 }}
                     >

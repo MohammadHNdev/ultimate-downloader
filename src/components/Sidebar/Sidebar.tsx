@@ -1,4 +1,4 @@
-import { makeStyles, Tooltip } from '@fluentui/react-components';
+import { Tooltip } from '@fluentui/react-components';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Home24Regular,
@@ -12,10 +12,10 @@ import {
 } from '@fluentui/react-icons';
 import { motion } from 'framer-motion';
 
-const useStyles = makeStyles({
+const styles = {
   root: {
     display: 'flex',
-    flexDirection: 'column',
+    flexDirection: 'column' as const,
     width: '68px',
     height: '100%',
     backgroundColor: '#0A0B14',
@@ -26,12 +26,12 @@ const useStyles = makeStyles({
   },
   navSection: {
     display: 'flex',
-    flexDirection: 'column',
+    flexDirection: 'column' as const,
     gap: '4px',
     flex: 1,
   },
   navItem: {
-    position: 'relative',
+    position: 'relative' as const,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -43,21 +43,13 @@ const useStyles = makeStyles({
     color: 'rgba(255, 255, 255, 0.5)',
     cursor: 'pointer',
     transition: 'all 0.2s ease',
-    '&:hover': {
-      backgroundColor: 'rgba(255, 255, 255, 0.08)',
-      color: 'rgba(255, 255, 255, 0.8)',
-    },
   },
   navItemActive: {
     backgroundColor: 'rgba(96, 103, 214, 0.15)',
     color: '#6067D6',
-    '&:hover': {
-      backgroundColor: 'rgba(96, 103, 214, 0.2)',
-      color: '#7075E3',
-    },
   },
   activeIndicator: {
-    position: 'absolute',
+    position: 'absolute' as const,
     left: '-12px',
     width: '3px',
     height: '20px',
@@ -66,13 +58,13 @@ const useStyles = makeStyles({
   },
   bottomSection: {
     display: 'flex',
-    flexDirection: 'column',
+    flexDirection: 'column' as const,
     gap: '4px',
     paddingTop: '16px',
     borderTop: '1px solid rgba(255, 255, 255, 0.06)',
   },
   downloadCount: {
-    position: 'absolute',
+    position: 'absolute' as const,
     top: '4px',
     right: '4px',
     minWidth: '18px',
@@ -87,7 +79,7 @@ const useStyles = makeStyles({
     justifyContent: 'center',
     padding: '0 4px',
   },
-});
+};
 
 interface NavItemProps {
   icon: React.ReactNode;
@@ -98,7 +90,6 @@ interface NavItemProps {
 }
 
 function NavItem({ icon, activeIcon, label, path, badge }: NavItemProps) {
-  const styles = useStyles();
   const location = useLocation();
   const navigate = useNavigate();
   const isActive = location.pathname === path;
@@ -106,14 +97,17 @@ function NavItem({ icon, activeIcon, label, path, badge }: NavItemProps) {
   return (
     <Tooltip content={label} relationship="label" positioning="after">
       <motion.button
-        className={`${styles.navItem} ${isActive ? styles.navItemActive : ''}`}
+        style={{
+          ...styles.navItem,
+          ...(isActive ? styles.navItemActive : {}),
+        }}
         onClick={() => navigate(path)}
-        whileHover={{ scale: 1.05 }}
+        whileHover={{ scale: 1.05, backgroundColor: isActive ? 'rgba(96, 103, 214, 0.2)' : 'rgba(255, 255, 255, 0.08)' }}
         whileTap={{ scale: 0.95 }}
       >
         {isActive && (
           <motion.div
-            className={styles.activeIndicator}
+            style={styles.activeIndicator}
             layoutId="activeIndicator"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -123,7 +117,7 @@ function NavItem({ icon, activeIcon, label, path, badge }: NavItemProps) {
         {isActive ? activeIcon : icon}
         {badge !== undefined && badge > 0 && (
           <motion.span
-            className={styles.downloadCount}
+            style={styles.downloadCount}
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: 'spring', stiffness: 500, damping: 30 }}
@@ -137,13 +131,12 @@ function NavItem({ icon, activeIcon, label, path, badge }: NavItemProps) {
 }
 
 export default function Sidebar() {
-  const styles = useStyles();
   // TODO: Get active downloads count from store
   const activeDownloads = 0;
 
   return (
-    <nav className={styles.root}>
-      <div className={styles.navSection}>
+    <nav style={styles.root}>
+      <div style={styles.navSection}>
         <NavItem
           icon={<Home24Regular />}
           activeIcon={<Home24Filled />}
@@ -165,7 +158,7 @@ export default function Sidebar() {
         />
       </div>
 
-      <div className={styles.bottomSection}>
+      <div style={styles.bottomSection}>
         <NavItem
           icon={<Settings24Regular />}
           activeIcon={<Settings24Filled />}

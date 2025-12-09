@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import {
-  makeStyles,
   Text,
   Switch,
   Dropdown,
@@ -17,17 +16,17 @@ import {
 } from '@fluentui/react-icons';
 import { motion } from 'framer-motion';
 
-const useStyles = makeStyles({
+const styles = {
   root: {
     display: 'flex',
-    flexDirection: 'column',
+    flexDirection: 'column' as const,
     height: '100%',
     gap: '32px',
     maxWidth: '800px',
   },
   header: {
     display: 'flex',
-    flexDirection: 'column',
+    flexDirection: 'column' as const,
     gap: '8px',
   },
   title: {
@@ -41,15 +40,15 @@ const useStyles = makeStyles({
   },
   sections: {
     display: 'flex',
-    flexDirection: 'column',
+    flexDirection: 'column' as const,
     gap: '24px',
     flex: 1,
-    overflow: 'auto',
+    overflow: 'auto' as const,
     paddingRight: '8px',
   },
   section: {
     display: 'flex',
-    flexDirection: 'column',
+    flexDirection: 'column' as const,
     gap: '16px',
     padding: '20px',
     backgroundColor: 'rgba(255, 255, 255, 0.03)',
@@ -86,17 +85,10 @@ const useStyles = makeStyles({
     justifyContent: 'space-between',
     padding: '12px 0',
     borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
-    '&:last-child': {
-      borderBottom: 'none',
-      paddingBottom: 0,
-    },
-    '&:first-child': {
-      paddingTop: 0,
-    },
   },
   settingInfo: {
     display: 'flex',
-    flexDirection: 'column',
+    flexDirection: 'column' as const,
     gap: '4px',
     flex: 1,
   },
@@ -143,13 +135,12 @@ const useStyles = makeStyles({
   checkUpdateBtn: {
     flexShrink: 0,
   },
-});
+};
 
 type QualityOption = 'best' | '1080p' | '720p' | '480p';
 type ThemeOption = 'dark' | 'light' | 'system';
 
 export default function SettingsPage() {
-  const styles = useStyles();
   const [downloadPath, setDownloadPath] = useState('/Users/Downloads');
   const [defaultQuality, setDefaultQuality] = useState<QualityOption>('best');
   const [theme, setTheme] = useState<ThemeOption>('dark');
@@ -175,46 +166,46 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className={styles.root}>
+    <div style={styles.root}>
       <motion.div
-        className={styles.header}
+        style={styles.header}
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
       >
-        <Text className={styles.title}>Settings</Text>
-        <Text className={styles.subtitle}>
+        <Text style={styles.title}>Settings</Text>
+        <Text style={styles.subtitle}>
           Configure your download preferences and application settings
         </Text>
       </motion.div>
 
-      <div className={styles.sections}>
+      <div style={styles.sections}>
         <motion.div
-          className={styles.section}
+          style={styles.section}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.1 }}
         >
-          <div className={styles.sectionHeader}>
-            <div className={styles.sectionIcon}>
+          <div style={styles.sectionHeader}>
+            <div style={styles.sectionIcon}>
               <Folder24Regular />
             </div>
             <div>
-              <Text className={styles.sectionTitle}>Download Location</Text>
-              <Text className={styles.sectionDescription}>
+              <Text style={styles.sectionTitle}>Download Location</Text>
+              <Text style={styles.sectionDescription}>
                 Choose where your downloads will be saved
               </Text>
             </div>
           </div>
 
-          <div className={styles.settingRow}>
-            <div className={styles.settingInfo}>
-              <Text className={styles.settingLabel}>Save Location</Text>
-              <Text className={styles.settingDescription}>
+          <div style={styles.settingRow}>
+            <div style={styles.settingInfo}>
+              <Text style={styles.settingLabel}>Save Location</Text>
+              <Text style={styles.settingDescription}>
                 All downloaded files will be saved to this folder
               </Text>
             </div>
-            <div className={styles.pathInput}>
+            <div style={styles.pathInput}>
               <Input
                 value={downloadPath}
                 onChange={(_, data) => setDownloadPath(data.value)}
@@ -226,32 +217,32 @@ export default function SettingsPage() {
         </motion.div>
 
         <motion.div
-          className={styles.section}
+          style={styles.section}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.2 }}
         >
-          <div className={styles.sectionHeader}>
-            <div className={styles.sectionIcon}>
+          <div style={styles.sectionHeader}>
+            <div style={styles.sectionIcon}>
               <ArrowDownload24Regular />
             </div>
             <div>
-              <Text className={styles.sectionTitle}>Download Settings</Text>
-              <Text className={styles.sectionDescription}>
+              <Text style={styles.sectionTitle}>Download Settings</Text>
+              <Text style={styles.sectionDescription}>
                 Configure download quality and behavior
               </Text>
             </div>
           </div>
 
-          <div className={styles.settingRow}>
-            <div className={styles.settingInfo}>
-              <Text className={styles.settingLabel}>Default Quality</Text>
-              <Text className={styles.settingDescription}>
+          <div style={styles.settingRow}>
+            <div style={styles.settingInfo}>
+              <Text style={styles.settingLabel}>Default Quality</Text>
+              <Text style={styles.settingDescription}>
                 Preferred video quality for downloads
               </Text>
             </div>
             <Dropdown
-              className={styles.settingControl}
+              style={styles.settingControl}
               value={defaultQuality === 'best' ? 'Best Available' : defaultQuality}
               selectedOptions={[defaultQuality]}
               onOptionSelect={(_, data) => setDefaultQuality(data.optionValue as QualityOption)}
@@ -263,15 +254,15 @@ export default function SettingsPage() {
             </Dropdown>
           </div>
 
-          <div className={styles.settingRow}>
-            <div className={styles.settingInfo}>
-              <Text className={styles.settingLabel}>Simultaneous Downloads</Text>
-              <Text className={styles.settingDescription}>
+          <div style={styles.settingRow}>
+            <div style={styles.settingInfo}>
+              <Text style={styles.settingLabel}>Simultaneous Downloads</Text>
+              <Text style={styles.settingDescription}>
                 Maximum number of concurrent downloads
               </Text>
             </div>
             <Dropdown
-              className={styles.settingControl}
+              style={styles.settingControl}
               value={simultaneousDownloads}
               selectedOptions={[simultaneousDownloads]}
               onOptionSelect={(_, data) => setSimultaneousDownloads(data.optionValue as string)}
@@ -283,10 +274,10 @@ export default function SettingsPage() {
             </Dropdown>
           </div>
 
-          <div className={styles.settingRow}>
-            <div className={styles.settingInfo}>
-              <Text className={styles.settingLabel}>Embed Metadata</Text>
-              <Text className={styles.settingDescription}>
+          <div style={styles.settingRow}>
+            <div style={styles.settingInfo}>
+              <Text style={styles.settingLabel}>Embed Metadata</Text>
+              <Text style={styles.settingDescription}>
                 Include title, artist, and other info in downloaded files
               </Text>
             </div>
@@ -296,10 +287,10 @@ export default function SettingsPage() {
             />
           </div>
 
-          <div className={styles.settingRow}>
-            <div className={styles.settingInfo}>
-              <Text className={styles.settingLabel}>Embed Thumbnail</Text>
-              <Text className={styles.settingDescription}>
+          <div style={styles.settingRow}>
+            <div style={styles.settingInfo}>
+              <Text style={styles.settingLabel}>Embed Thumbnail</Text>
+              <Text style={styles.settingDescription}>
                 Add thumbnail as album art to audio files
               </Text>
             </div>
@@ -311,32 +302,32 @@ export default function SettingsPage() {
         </motion.div>
 
         <motion.div
-          className={styles.section}
+          style={styles.section}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.3 }}
         >
-          <div className={styles.sectionHeader}>
-            <div className={styles.sectionIcon}>
+          <div style={styles.sectionHeader}>
+            <div style={styles.sectionIcon}>
               <Color24Regular />
             </div>
             <div>
-              <Text className={styles.sectionTitle}>Appearance</Text>
-              <Text className={styles.sectionDescription}>
+              <Text style={styles.sectionTitle}>Appearance</Text>
+              <Text style={styles.sectionDescription}>
                 Customize the look and feel of the app
               </Text>
             </div>
           </div>
 
-          <div className={styles.settingRow}>
-            <div className={styles.settingInfo}>
-              <Text className={styles.settingLabel}>Theme</Text>
-              <Text className={styles.settingDescription}>
+          <div style={styles.settingRow}>
+            <div style={styles.settingInfo}>
+              <Text style={styles.settingLabel}>Theme</Text>
+              <Text style={styles.settingDescription}>
                 Choose your preferred color scheme
               </Text>
             </div>
             <Dropdown
-              className={styles.settingControl}
+              style={styles.settingControl}
               value={theme.charAt(0).toUpperCase() + theme.slice(1)}
               selectedOptions={[theme]}
               onOptionSelect={(_, data) => setTheme(data.optionValue as ThemeOption)}
@@ -347,10 +338,10 @@ export default function SettingsPage() {
             </Dropdown>
           </div>
 
-          <div className={styles.settingRow}>
-            <div className={styles.settingInfo}>
-              <Text className={styles.settingLabel}>Notifications</Text>
-              <Text className={styles.settingDescription}>
+          <div style={styles.settingRow}>
+            <div style={styles.settingInfo}>
+              <Text style={styles.settingLabel}>Notifications</Text>
+              <Text style={styles.settingDescription}>
                 Show notifications when downloads complete
               </Text>
             </div>
@@ -362,27 +353,27 @@ export default function SettingsPage() {
         </motion.div>
 
         <motion.div
-          className={styles.section}
+          style={styles.section}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.4 }}
         >
-          <div className={styles.sectionHeader}>
-            <div className={styles.sectionIcon}>
+          <div style={styles.sectionHeader}>
+            <div style={styles.sectionIcon}>
               <Info24Regular />
             </div>
             <div>
-              <Text className={styles.sectionTitle}>About</Text>
-              <Text className={styles.sectionDescription}>
+              <Text style={styles.sectionTitle}>About</Text>
+              <Text style={styles.sectionDescription}>
                 Application information and updates
               </Text>
             </div>
           </div>
 
-          <div className={styles.settingRow}>
-            <div className={styles.settingInfo}>
-              <Text className={styles.settingLabel}>Auto Update</Text>
-              <Text className={styles.settingDescription}>
+          <div style={styles.settingRow}>
+            <div style={styles.settingInfo}>
+              <Text style={styles.settingLabel}>Auto Update</Text>
+              <Text style={styles.settingDescription}>
                 Automatically check for and install updates
               </Text>
             </div>
@@ -392,13 +383,13 @@ export default function SettingsPage() {
             />
           </div>
 
-          <div className={styles.versionInfo}>
+          <div style={styles.versionInfo}>
             <CheckmarkCircle24Regular style={{ color: '#4ADE80' }} />
-            <div className={styles.versionText}>
-              <Text className={styles.versionNumber}>Ultimate Downloader v1.0.0</Text>
-              <Text className={styles.versionLabel}>You're running the latest version</Text>
+            <div style={styles.versionText}>
+              <Text style={styles.versionNumber}>Ultimate Downloader v1.0.0</Text>
+              <Text style={styles.versionLabel}>You're running the latest version</Text>
             </div>
-            <Button className={styles.checkUpdateBtn} appearance="subtle">
+            <Button style={styles.checkUpdateBtn} appearance="subtle">
               Check for Updates
             </Button>
           </div>
