@@ -47,11 +47,15 @@ async fn start_download(
     url: String,
     format_id: String,
     output_path: String,
-    download_id: Option<String>,  // Accept ID from frontend
+    download_id: String,  // Accept ID from frontend (required now)
     options: DownloadOptions,
 ) -> Result<DownloadResponse, String> {
-    // Use provided ID or generate new one
-    let download_id = download_id.unwrap_or_else(|| uuid::Uuid::new_v4().to_string());
+    // Debug logging
+    eprintln!("[start_download] URL: {}", url);
+    eprintln!("[start_download] Format: {}", format_id);
+    eprintln!("[start_download] Output: {}", output_path);
+    eprintln!("[start_download] ID: {}", download_id);
+
     let download_id_clone = download_id.clone();
     let app_for_callback = app.clone();
     let app_for_result = app.clone();

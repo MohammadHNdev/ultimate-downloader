@@ -186,13 +186,22 @@ where
     let ytdlp_path = get_ytdlp_path();
     let ffmpeg_path = get_ffmpeg_path();
 
+    eprintln!("[download_video] Using yt-dlp at: {:?}", ytdlp_path);
+    eprintln!("[download_video] Using ffmpeg at: {:?}", ffmpeg_path);
+    eprintln!("[download_video] URL: {}", url);
+    eprintln!("[download_video] Format: {}", format_id);
+    eprintln!("[download_video] Output: {}", output_path);
+
     // Add ffmpeg location if bundled
     if ffmpeg_path.exists() {
         if let Some(parent) = ffmpeg_path.parent() {
             args.insert(0, parent.to_string_lossy().to_string());
             args.insert(0, "--ffmpeg-location".to_string());
+            eprintln!("[download_video] Added ffmpeg location: {:?}", parent);
         }
     }
+
+    eprintln!("[download_video] Full args: {:?}", args);
 
     // Spawn yt-dlp process (hidden on Windows)
     let mut cmd = Command::new(&ytdlp_path);

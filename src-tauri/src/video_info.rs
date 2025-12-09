@@ -113,6 +113,9 @@ struct YtDlpFormat {
 
 pub async fn fetch_info(url: &str) -> Result<VideoInfo, Box<dyn std::error::Error + Send + Sync>> {
     let ytdlp_path = get_ytdlp_path();
+    eprintln!("[fetch_info] Using yt-dlp at: {:?}", ytdlp_path);
+    eprintln!("[fetch_info] URL: {}", url);
+
     let mut cmd = Command::new(&ytdlp_path);
     cmd.args([
         "--dump-json",
@@ -129,8 +132,13 @@ pub async fn fetch_info(url: &str) -> Result<VideoInfo, Box<dyn std::error::Erro
 
     let output = cmd.output().await?;
 
+    eprintln!("[fetch_info] Exit status: {:?}", output.status);
+
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
+        let stdout = String::from_utf8_lossy(&output.stdout);
+        eprintln!("[fetch_info] stderr: {}", stderr);
+        eprintln!("[fetch_info] stdout: {}", stdout);
         return Err(format!("yt-dlp failed: {}", stderr).into());
     }
 
