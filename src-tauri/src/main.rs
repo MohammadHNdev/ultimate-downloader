@@ -54,6 +54,8 @@ async fn start_download(
     let app_for_callback = app.clone();
     let app_for_result = app.clone();
 
+    let download_id_for_downloader = download_id.clone();
+
     // Spawn download task
     tokio::spawn(async move {
         match downloader::download_video(
@@ -61,6 +63,7 @@ async fn start_download(
             &format_id,
             &output_path,
             &options,
+            &download_id_for_downloader,
             move |progress| {
                 // Emit progress event to frontend immediately
                 let _ = app_for_callback.emit("download-progress", &progress);

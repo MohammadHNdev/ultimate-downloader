@@ -14,10 +14,9 @@ import {
   Color24Regular,
   Info24Regular,
   CheckmarkCircle24Regular,
-  LocalLanguage24Regular,
 } from '@fluentui/react-icons';
 import { motion } from 'framer-motion';
-import { useSettingsStore, QualityOption, ThemeOption, LanguageOption } from '../../stores/settingsStore';
+import { useSettingsStore, QualityOption, ThemeOption } from '../../stores/settingsStore';
 
 const styles = {
   root: {
@@ -146,7 +145,6 @@ export default function SettingsPage() {
     downloadPath,
     defaultQuality,
     theme,
-    language,
     autoUpdate,
     notifications,
     simultaneousDownloads,
@@ -155,7 +153,6 @@ export default function SettingsPage() {
     setDownloadPath,
     setDefaultQuality,
     setTheme,
-    setLanguage,
     setAutoUpdate,
     setNotifications,
     setSimultaneousDownloads,
@@ -333,22 +330,6 @@ export default function SettingsPage() {
 
           <div style={styles.settingRow}>
             <div style={styles.settingInfo}>
-              <Text style={styles.settingLabel}>{t('settings.sections.appearance.language')}</Text>
-              <Text style={styles.settingDescription}>{t('settings.sections.appearance.languageDesc')}</Text>
-            </div>
-            <Dropdown
-              style={styles.settingControl}
-              value={language === 'en' ? 'English' : 'فارسی'}
-              selectedOptions={[language]}
-              onOptionSelect={(_, data) => setLanguage(data.optionValue as LanguageOption)}
-            >
-              <Option value="en">English</Option>
-              <Option value="fa">فارسی</Option>
-            </Dropdown>
-          </div>
-
-          <div style={styles.settingRow}>
-            <div style={styles.settingInfo}>
               <Text style={styles.settingLabel}>{t('settings.sections.appearance.theme')}</Text>
               <Text style={styles.settingDescription}>{t('settings.sections.appearance.themeDesc')}</Text>
             </div>
@@ -406,7 +387,7 @@ export default function SettingsPage() {
           <div style={styles.versionInfo}>
             <CheckmarkCircle24Regular style={{ color: '#4ADE80' }} />
             <div style={styles.versionText}>
-              <Text style={styles.versionNumber}>{t('settings.sections.about.version')} v1.3.2</Text>
+              <Text style={styles.versionNumber}>{t('settings.sections.about.version')} v1.3.3</Text>
               <Text style={styles.versionLabel}>{t('settings.sections.about.latestVersion')}</Text>
             </div>
             <Button style={styles.checkUpdateBtn} appearance="subtle">

@@ -1,4 +1,3 @@
-import { Tooltip } from '@fluentui/react-components';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Home24Regular,
@@ -10,7 +9,6 @@ import {
   ArrowDownload24Regular,
   ArrowDownload24Filled,
 } from '@fluentui/react-icons';
-import { motion } from 'framer-motion';
 
 const styles = {
   root: {
@@ -44,9 +42,14 @@ const styles = {
     cursor: 'pointer',
     transition: 'all 0.2s ease',
   },
-  navItemActive: {
+  navItemHover: {
     backgroundColor: 'rgba(96, 103, 214, 0.15)',
-    color: '#6067D6',
+    color: 'rgba(255, 255, 255, 0.8)',
+    transform: 'scale(1.05)',
+  },
+  navItemActive: {
+    backgroundColor: 'rgba(96, 103, 214, 0.2)',
+    color: '#9597F5',
   },
   activeIndicator: {
     position: 'absolute' as const,
@@ -95,43 +98,42 @@ function NavItem({ icon, activeIcon, label, path, badge }: NavItemProps) {
   const isActive = location.pathname === path;
 
   return (
-    <Tooltip content={label} relationship="label" positioning="after">
-      <motion.button
-        style={{
-          ...styles.navItem,
-          ...(isActive ? styles.navItemActive : {}),
-        }}
-        onClick={() => navigate(path)}
-        whileHover={{ scale: 1.05, backgroundColor: isActive ? 'rgba(96, 103, 214, 0.25)' : 'rgba(96, 103, 214, 0.1)' }}
-        whileTap={{ scale: 0.95 }}
-      >
-        {isActive && (
-          <motion.div
-            style={styles.activeIndicator}
-            layoutId="activeIndicator"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.2 }}
-          />
-        )}
-        {isActive ? activeIcon : icon}
-        {badge !== undefined && badge > 0 && (
-          <motion.span
-            style={styles.downloadCount}
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-          >
-            {badge > 99 ? '99+' : badge}
-          </motion.span>
-        )}
-      </motion.button>
-    </Tooltip>
+    <button
+      style={{
+        ...styles.navItem,
+        ...(isActive ? styles.navItemActive : {}),
+      }}
+      onClick={() => navigate(path)}
+      title={label}
+      onMouseEnter={(e) => {
+        if (!isActive) {
+          e.currentTarget.style.backgroundColor = 'rgba(96, 103, 214, 0.15)';
+          e.currentTarget.style.color = 'rgba(255, 255, 255, 0.8)';
+          e.currentTarget.style.transform = 'scale(1.05)';
+        }
+      }}
+      onMouseLeave={(e) => {
+        if (!isActive) {
+          e.currentTarget.style.backgroundColor = 'transparent';
+          e.currentTarget.style.color = 'rgba(255, 255, 255, 0.5)';
+          e.currentTarget.style.transform = 'scale(1)';
+        }
+      }}
+    >
+      {isActive && (
+        <div style={styles.activeIndicator} />
+      )}
+      {isActive ? activeIcon : icon}
+      {badge !== undefined && badge > 0 && (
+        <span style={styles.downloadCount}>
+          {badge > 99 ? '99+' : badge}
+        </span>
+      )}
+    </button>
   );
 }
 
 export default function Sidebar() {
-  // TODO: Get active downloads count from store
   const activeDownloads = 0;
 
   return (

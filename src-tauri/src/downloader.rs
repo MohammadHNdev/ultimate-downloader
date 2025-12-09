@@ -64,12 +64,13 @@ pub async fn download_video<F>(
     format_id: &str,
     output_path: &str,
     options: &DownloadOptions,
+    download_id: &str,
     progress_callback: F,
 ) -> Result<String, Box<dyn std::error::Error + Send + Sync>>
 where
     F: Fn(DownloadProgress) + Send + 'static,
 {
-    let download_id = uuid::Uuid::new_v4().to_string();
+    let download_id = download_id.to_string();
 
     // Build yt-dlp command
     // For video formats, merge with best audio to ensure video has sound
