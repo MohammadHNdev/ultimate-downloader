@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text } from '@fluentui/react-components';
 import {
@@ -110,10 +110,6 @@ const styles = {
     gap: '16px',
     textAlign: 'center' as const,
   },
-  emptyIcon: {
-    fontSize: '48px',
-    opacity: 0.5,
-  },
   emptyText: {
     color: 'rgba(255, 255, 255, 0.5)',
     fontSize: '15px',
@@ -141,55 +137,185 @@ const platforms = [
   { name: 'Vimeo', icon: <Film24Regular />, color: '#1AB7EA' },
 ];
 
-// Mock data for demonstration
-const mockVideoInfo: VideoInfo = {
-  id: 'test123',
-  title: 'Amazing Video Title - This is a test video with a long title',
-  channel: 'Test Channel',
-  thumbnail: 'https://picsum.photos/400/225',
-  duration: '10:32',
-  viewCount: '1.2M',
-  uploadDate: '2024-01-15',
-  platform: 'YouTube',
-  formats: [
-    { id: '1', quality: '2160p 4K', extension: 'mp4', size: '1.2 GB', type: 'video+audio', hasAudio: true, fps: 60 },
-    { id: '2', quality: '1440p', extension: 'mp4', size: '650 MB', type: 'video+audio', hasAudio: true, fps: 60 },
-    { id: '3', quality: '1080p', extension: 'mp4', size: '350 MB', type: 'video+audio', hasAudio: true, fps: 60 },
-    { id: '4', quality: '1080p', extension: 'mp4', size: '280 MB', type: 'video+audio', hasAudio: true, fps: 30 },
-    { id: '5', quality: '720p', extension: 'mp4', size: '180 MB', type: 'video+audio', hasAudio: true, fps: 30 },
-    { id: '6', quality: '480p', extension: 'mp4', size: '95 MB', type: 'video+audio', hasAudio: true, fps: 30 },
-    { id: '7', quality: '360p', extension: 'mp4', size: '55 MB', type: 'video+audio', hasAudio: true, fps: 30 },
-    { id: '8', quality: '320kbps', extension: 'mp3', size: '25 MB', type: 'audio', hasAudio: true },
-    { id: '9', quality: '256kbps', extension: 'mp3', size: '20 MB', type: 'audio', hasAudio: true },
-    { id: '10', quality: '128kbps', extension: 'mp3', size: '10 MB', type: 'audio', hasAudio: true },
-  ],
+const platformColors: Record<string, string> = {
+  youtube: '#FF0000',
+  instagram: '#E4405F',
+  tiktok: '#00F2EA',
+  twitter: '#1DA1F2',
+  facebook: '#1877F2',
+  vimeo: '#1AB7EA',
+  twitch: '#9146FF',
+  reddit: '#FF4500',
+  soundcloud: '#FF5500',
+  spotify: '#1DB954',
 };
+
+function formatSize(bytes: number | undefined): string {
+  if (!bytes) return 'Unknown';
+  const units = ['B', 'KB', 'MB', 'GB'];
+  let size = bytes;
+  let unitIndex = 0;
+  while (size >= 1024 && unitIndex < units.length - 1) {
+    size /= 1024;
+    unitIndex++;
+  }
+  return `${size.toFixed(1)} ${units[unitIndex]}`;
+}
 
 export default function HomePage() {
   const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [videoInfo, setVideoInfo] = useState<VideoInfo | null>(null);
-  const { downloads, addDownload, pauseDownload, resumeDownload, cancelDownload } =
+  const [currentUrl, setCurrentUrl] = useState('');
+  const { downloads, addDownload, pauseDownload, resumeDownload, cancelDownload, updateProgress, updateStatus } =
     useDownloadStore();
-  const { downloadPath } = useSettingsStore();
+  const { downloadPath, embedMetadata, embedThumbnail } = useSettingsStore();
 
-  const handleURLSubmit = useCallback(async (_url: string) => {
+  // Listen for download events from Tauri
+  useEffect(() => {
+    let unlisten: (() => void) | undefined;
+
+    const setupListeners = async () => {
+      const { listen } = await import('@tauri-apps/api/event');
+
+      const progressUnlisten = await listen<{
+        id: string;
+        progress: number;
+        speed: string;
+        eta: string;
+        downloaded_size: string;
+        total_size: string;
+        status: string;
+      }>('download-progress', (event) => {
+        const { id, progress, speed, eta, status, downloaded_size, total_size } = event.payload;
+
+        // Update download in store
+        const store = useDownloadStore.getState();
+        const download = store.downloads.find(d => d.id === id);
+        if (download) {
+          store.updateProgress(id, progress);
+          // Also update other fields
+          const updatedDownload = {
+            ...download,
+            progress,
+            speed,
+            eta,
+            status: status as any,
+            downloadedSize: downloaded_size,
+            size: total_size || download.size,
+          };
+          // This is a simplified update - in production, update the store properly
+        }
+      });
+
+      const completeUnlisten = await listen<{ id: string; success: boolean }>('download-complete', (event) => {
+        const { id, success } = event.payload;
+        if (success) {
+          updateStatus(id, 'completed');
+        }
+      });
+
+      const errorUnlisten = await listen<{ id: string; error: string }>('download-error', (event) => {
+        const { id } = event.payload;
+        updateStatus(id, 'error');
+      });
+
+      unlisten = () => {
+        progressUnlisten();
+        completeUnlisten();
+        errorUnlisten();
+      };
+    };
+
+    setupListeners();
+
+    return () => {
+      if (unlisten) unlisten();
+    };
+  }, [updateProgress, updateStatus]);
+
+  const handleURLSubmit = useCallback(async (url: string) => {
     setIsLoading(true);
-    // Simulate API call to fetch video info
-    setTimeout(() => {
-      setVideoInfo(mockVideoInfo);
-      setShowPreview(true);
+    setCurrentUrl(url);
+
+    try {
+      const { invoke } = await import('@tauri-apps/api/core');
+
+      interface FetchResult {
+        success: boolean;
+        data?: {
+          id: string;
+          title: string;
+          channel: string;
+          thumbnail: string;
+          duration_string: string;
+          view_count?: number;
+          upload_date?: string;
+          extractor: string;
+          formats: Array<{
+            format_id: string;
+            quality_label: string;
+            ext: string;
+            filesize?: number;
+            filesize_approx?: number;
+            has_video: boolean;
+            has_audio: boolean;
+            fps?: number;
+          }>;
+        };
+        error?: string;
+      }
+
+      const result = await invoke<FetchResult>('fetch_video_info', { url });
+
+      if (result.success && result.data) {
+        const data = result.data;
+
+        // Transform to VideoInfo format
+        const info: VideoInfo = {
+          id: data.id,
+          title: data.title,
+          channel: data.channel,
+          thumbnail: data.thumbnail,
+          duration: data.duration_string,
+          viewCount: data.view_count ? `${(data.view_count / 1000000).toFixed(1)}M` : undefined,
+          uploadDate: data.upload_date,
+          platform: data.extractor,
+          formats: data.formats.map(f => ({
+            id: f.format_id,
+            quality: f.quality_label,
+            extension: f.ext,
+            size: formatSize(f.filesize || f.filesize_approx),
+            type: f.has_video && f.has_audio ? 'video+audio' : f.has_video ? 'video' : 'audio',
+            hasAudio: f.has_audio,
+            fps: f.fps,
+          })),
+        };
+
+        setVideoInfo(info);
+        setShowPreview(true);
+      } else {
+        console.error('Failed to fetch video info:', result.error);
+        alert(result.error || 'Failed to fetch video information');
+      }
+    } catch (error) {
+      console.error('Error fetching video info:', error);
+      alert('Failed to connect to the download service. Make sure the app is running properly.');
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   }, []);
 
   const handleDownload = useCallback(
-    (formatId: string, _options: { downloadSubtitles: boolean; downloadThumbnail: boolean; audioOnly: boolean }) => {
-      if (!videoInfo) return;
+    async (formatId: string, options: { downloadSubtitles: boolean; downloadThumbnail: boolean; audioOnly: boolean }) => {
+      if (!videoInfo || !currentUrl) return;
 
       const format = videoInfo.formats.find((f) => f.id === formatId);
       if (!format) return;
+
+      const platform = videoInfo.platform.toLowerCase();
+      const platformColor = platformColors[platform] || '#6067D6';
 
       const newDownload: DownloadItem = {
         id: `${Date.now()}`,
@@ -199,29 +325,41 @@ export default function HomePage() {
         duration: videoInfo.duration,
         status: 'downloading',
         progress: 0,
-        speed: '2.5 MB/s',
-        eta: '2:30',
+        speed: '',
+        eta: '',
         size: format.size,
         downloadedSize: '0 MB',
         platform: videoInfo.platform,
-        platformColor: '#FF0000',
+        platformColor,
       };
 
       addDownload(newDownload);
+      setShowPreview(false);
 
-      // Simulate download progress
-      let progress = 0;
-      const interval = setInterval(() => {
-        progress += Math.random() * 5;
-        if (progress >= 100) {
-          progress = 100;
-          clearInterval(interval);
-        }
-        // Update progress in store
-        useDownloadStore.getState().updateProgress(newDownload.id, progress);
-      }, 500);
+      try {
+        const { invoke } = await import('@tauri-apps/api/core');
+
+        const path = downloadPath || (await invoke<string>('get_default_download_path'));
+
+        await invoke('start_download', {
+          url: currentUrl,
+          formatId,
+          outputPath: path,
+          options: {
+            embed_metadata: embedMetadata,
+            embed_thumbnail: embedThumbnail,
+            download_subtitles: options.downloadSubtitles,
+            subtitle_languages: null,
+            audio_only: options.audioOnly,
+            audio_format: options.audioOnly ? 'mp3' : null,
+          },
+        });
+      } catch (error) {
+        console.error('Failed to start download:', error);
+        updateStatus(newDownload.id, 'error');
+      }
     },
-    [videoInfo, addDownload]
+    [videoInfo, currentUrl, addDownload, downloadPath, embedMetadata, embedThumbnail, updateStatus]
   );
 
   const activeDownloads = downloads.filter(
@@ -318,8 +456,9 @@ export default function HomePage() {
                   onOpenFolder={async () => {
                     try {
                       const { open } = await import('@tauri-apps/plugin-shell');
-                      if (downloadPath) {
-                        await open(downloadPath);
+                      const path = downloadPath || (await import('@tauri-apps/api/core').then(m => m.invoke<string>('get_default_download_path')));
+                      if (path) {
+                        await open(path);
                       }
                     } catch (error) {
                       console.error('Failed to open folder:', error);
