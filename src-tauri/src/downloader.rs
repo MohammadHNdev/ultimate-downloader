@@ -84,6 +84,9 @@ where
     let mut args = vec![
         "--newline".to_string(),
         "--progress".to_string(),
+        // Use progress template for consistent, parseable output
+        "--progress-template".to_string(),
+        "download:PROGRESS:%(progress._percent_str)s:%(progress._speed_str)s:%(progress._eta_str)s:%(progress._total_bytes_str)s".to_string(),
         "--no-warnings".to_string(),
         "--no-playlist".to_string(),
         "--no-write-comments".to_string(),
@@ -144,19 +147,40 @@ where
     let stdout = child.stdout.take().expect("Failed to capture stdout");
     let stderr = child.stderr.take().expect("Failed to capture stderr");
 
-    // Progress parsing regex
-    let progress_regex = Regex::new(
+    // Multiple progress parsing regexes for different yt-dlp output formats
+    // Custom template format: PROGRESS:45.2%:5.00MiB/s:00:15:150.00MiB
+    let progress_template_regex = Regex::new(
+        r"PROGRESS:\s*(\d+\.?\d*)%\s*:\s*(\S*)\s*:\s*(\S*)\s*:\s*(\S*)",
+    )?;
+    // Format 1: [download]  45.2% of 150.00MiB at 5.00MiB/s ETA 00:15
+    let progress_regex1 = Regex::new(
         r"\[download\]\s+(\d+\.?\d*)%\s+of\s+~?\s*(\S+)\s+at\s+(\S+)\s+ETA\s+(\S+)",
     )?;
+    // Format 2: [download]  45.2%
+    let progress_regex2 = Regex::new(
+        r"\[download\]\s+(\d+\.?\d*)%",
+    )?;
 
-    let download_regex = Regex::new(r"\[download\]\s+Downloading")?;
-    let merge_regex = Regex::new(r"\[Merger\]")?;
+    let download_regex = Regex::new(r"\[download\]")?;
+    let merge_regex = Regex::new(r"\[Merger\]|\[ffmpeg\]")?;
     let convert_regex = Regex::new(r"\[ExtractAudio\]")?;
+    let destination_regex = Regex::new(r"Destination:")?;
 
     let download_id_clone = download_id.clone();
 
     // Read stdout line by line
     let mut reader = BufReader::new(stdout).lines();
+
+    // Send initial progress immediately
+    progress_callback(DownloadProgress {
+        id: download_id_clone.clone(),
+        progress: 0.0,
+        speed: "Starting...".to_string(),
+        eta: String::new(),
+        downloaded_size: "0 MB".to_string(),
+        total_size: String::new(),
+        status: "downloading".to_string(),
+    });
 
     tokio::spawn(async move {
         let mut stderr_reader = BufReader::new(stderr).lines();
@@ -165,56 +189,105 @@ where
         }
     });
 
+    let mut last_progress: f64 = 0.0;
+
     while let Ok(Some(line)) = reader.next_line().await {
-        // Parse progress from yt-dlp output
-        if let Some(caps) = progress_regex.captures(&line) {
+        eprintln!("yt-dlp: {}", line); // Debug log
+
+        // Try to parse progress with multiple regex patterns
+        let mut matched = false;
+
+        // Try custom template format first (PROGRESS:45.2%:5.00MiB/s:00:15:150.00MiB)
+        if let Some(caps) = progress_template_regex.captures(&line) {
+            let progress: f64 = caps.get(1).unwrap().as_str().parse().unwrap_or(0.0);
+            let speed = caps.get(2).map(|m| m.as_str().to_string()).unwrap_or_default();
+            let eta = caps.get(3).map(|m| m.as_str().to_string()).unwrap_or_default();
+            let total_size = caps.get(4).map(|m| m.as_str().to_string()).unwrap_or_default();
+
+            if progress > last_progress || progress == 0.0 {
+                last_progress = progress;
+                progress_callback(DownloadProgress {
+                    id: download_id_clone.clone(),
+                    progress,
+                    speed: if speed.is_empty() || speed == "N/A" { "Downloading...".to_string() } else { speed },
+                    eta: if eta == "N/A" { String::new() } else { eta },
+                    downloaded_size: format!("{:.1}%", progress),
+                    total_size: if total_size == "N/A" { String::new() } else { total_size },
+                    status: "downloading".to_string(),
+                });
+                matched = true;
+            }
+        }
+        // Try standard yt-dlp format
+        else if let Some(caps) = progress_regex1.captures(&line) {
             let progress: f64 = caps.get(1).unwrap().as_str().parse().unwrap_or(0.0);
             let total_size = caps.get(2).unwrap().as_str().to_string();
             let speed = caps.get(3).unwrap().as_str().to_string();
             let eta = caps.get(4).unwrap().as_str().to_string();
 
-            // Calculate downloaded size
-            let downloaded_size = format!("{:.1}%", progress);
-
+            last_progress = progress;
             progress_callback(DownloadProgress {
                 id: download_id_clone.clone(),
                 progress,
                 speed,
                 eta,
-                downloaded_size,
+                downloaded_size: format!("{:.1}%", progress),
                 total_size,
                 status: "downloading".to_string(),
             });
-        } else if download_regex.is_match(&line) {
-            progress_callback(DownloadProgress {
-                id: download_id_clone.clone(),
-                progress: 0.0,
-                speed: String::new(),
-                eta: String::new(),
-                downloaded_size: String::new(),
-                total_size: String::new(),
-                status: "starting".to_string(),
-            });
-        } else if merge_regex.is_match(&line) {
-            progress_callback(DownloadProgress {
-                id: download_id_clone.clone(),
-                progress: 99.0,
-                speed: String::new(),
-                eta: String::new(),
-                downloaded_size: String::new(),
-                total_size: String::new(),
-                status: "merging".to_string(),
-            });
-        } else if convert_regex.is_match(&line) {
-            progress_callback(DownloadProgress {
-                id: download_id_clone.clone(),
-                progress: 99.0,
-                speed: String::new(),
-                eta: String::new(),
-                downloaded_size: String::new(),
-                total_size: String::new(),
-                status: "converting".to_string(),
-            });
+            matched = true;
+        }
+        // Try simpler format
+        else if let Some(caps) = progress_regex2.captures(&line) {
+            let progress: f64 = caps.get(1).unwrap().as_str().parse().unwrap_or(0.0);
+
+            if progress > last_progress {
+                last_progress = progress;
+                progress_callback(DownloadProgress {
+                    id: download_id_clone.clone(),
+                    progress,
+                    speed: "Downloading...".to_string(),
+                    eta: String::new(),
+                    downloaded_size: format!("{:.1}%", progress),
+                    total_size: String::new(),
+                    status: "downloading".to_string(),
+                });
+                matched = true;
+            }
+        }
+
+        if !matched {
+            if merge_regex.is_match(&line) {
+                progress_callback(DownloadProgress {
+                    id: download_id_clone.clone(),
+                    progress: 99.0,
+                    speed: "Merging...".to_string(),
+                    eta: String::new(),
+                    downloaded_size: String::new(),
+                    total_size: String::new(),
+                    status: "merging".to_string(),
+                });
+            } else if convert_regex.is_match(&line) {
+                progress_callback(DownloadProgress {
+                    id: download_id_clone.clone(),
+                    progress: 99.0,
+                    speed: "Converting...".to_string(),
+                    eta: String::new(),
+                    downloaded_size: String::new(),
+                    total_size: String::new(),
+                    status: "converting".to_string(),
+                });
+            } else if destination_regex.is_match(&line) {
+                progress_callback(DownloadProgress {
+                    id: download_id_clone.clone(),
+                    progress: 5.0,
+                    speed: "Preparing...".to_string(),
+                    eta: String::new(),
+                    downloaded_size: String::new(),
+                    total_size: String::new(),
+                    status: "downloading".to_string(),
+                });
+            }
         }
     }
 
