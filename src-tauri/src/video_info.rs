@@ -52,6 +52,8 @@ struct YtDlpInfo {
     channel_url: Option<String>,
     thumbnail: Option<String>,
     thumbnails: Option<Vec<Thumbnail>>,
+    // Instagram specific
+    display_url: Option<String>,
     duration: Option<f64>,
     duration_string: Option<String>,
     view_count: Option<u64>,
@@ -109,9 +111,10 @@ pub async fn fetch_info(url: &str) -> Result<VideoInfo, Box<dyn std::error::Erro
     let stdout = String::from_utf8_lossy(&output.stdout);
     let info: YtDlpInfo = serde_json::from_str(&stdout)?;
 
-    // Get best thumbnail
+    // Get best thumbnail (check multiple sources for Instagram compatibility)
     let thumbnail = info
         .thumbnail
+        .or(info.display_url.clone())
         .or_else(|| {
             info.thumbnails.and_then(|thumbs| {
                 thumbs

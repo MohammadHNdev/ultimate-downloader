@@ -97,7 +97,8 @@ where
         "-f".to_string(),
         format_string,
         "-o".to_string(),
-        format!("{}/%(title)s.%(ext)s", output_path),
+        // Better filename: use title, fallback to uploader_id for Instagram
+        format!("{}/%(title,uploader_id)s - %(upload_date>%Y-%m-%d,id)s.%(ext)s", output_path),
     ];
 
     if options.embed_metadata {
