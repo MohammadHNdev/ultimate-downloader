@@ -7,7 +7,7 @@ import {
   MusicNote224Regular,
   Chat24Regular,
   People24Regular,
-  Film24Regular,
+  Filmstrip24Regular,
   ArrowDownload24Regular,
 } from '@fluentui/react-icons';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -134,7 +134,7 @@ const platforms = [
   { name: 'TikTok', icon: <MusicNote224Regular />, color: '#00F2EA' },
   { name: 'Twitter', icon: <Chat24Regular />, color: '#1DA1F2' },
   { name: 'Facebook', icon: <People24Regular />, color: '#1877F2' },
-  { name: 'Vimeo', icon: <Film24Regular />, color: '#1AB7EA' },
+  { name: 'Vimeo', icon: <Filmstrip24Regular />, color: '#1AB7EA' },
 ];
 
 const platformColors: Record<string, string> = {
