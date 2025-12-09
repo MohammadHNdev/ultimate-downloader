@@ -8,7 +8,7 @@ use downloader::{DownloadOptions, DownloadProgress};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::sync::Arc;
-use tauri::{Emitter, Manager, State};
+use tauri::{Emitter, State};
 use tokio::sync::Mutex;
 use video_info::VideoInfo;
 
@@ -88,17 +88,18 @@ async fn start_download(
             &format_id,
             &output_path,
             &options,
-            |progress| {
+            move |progress| {
                 // Update progress in state
                 let downloads = downloads.clone();
                 let progress_clone = progress.clone();
+                let app = app_clone.clone();
                 tokio::spawn(async move {
                     let mut downloads = downloads.lock().await;
                     downloads.insert(progress_clone.id.clone(), progress_clone);
                 });
 
                 // Emit progress event to frontend
-                let _ = app_clone.emit("download-progress", progress);
+                let _ = app.emit("download-progress", progress);
             },
         )
         .await
