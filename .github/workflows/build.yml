@@ -11,6 +11,7 @@ on:
 
 jobs:
   build:
+    if: startsWith(github.ref, 'refs/tags/')
     strategy:
       fail-fast: false
       matrix:
@@ -29,10 +30,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
 
       - name: Install Rust stable
-        uses: dtolnay/rust-action@stable
+        uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.target }}
 
@@ -42,10 +42,13 @@ jobs:
           workspaces: './src-tauri -> target'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
+
+      - name: Create resources directory
+        run: mkdir src-tauri/resources
+        shell: pwsh
 
       - name: Install yt-dlp (Windows)
-        if: matrix.platform == 'windows-latest'
         run: |
           Invoke-WebRequest -Uri "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe" -OutFile "src-tauri/resources/yt-dlp.exe"
         shell: pwsh
@@ -55,20 +58,25 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tagName: v__VERSION__
-          releaseName: 'Ultimate Downloader v__VERSION__'
+          tagName: ${{ github.ref_name }}
+          releaseName: 'Ultimate Downloader ${{ github.ref_name }}'
           releaseBody: |
-            ## What's New
-            - Initial release of Ultimate Downloader
-            - Download from 1800+ sites
+            ## Ultimate Downloader ${{ github.ref_name }}
+
+            ### Features
+            - Download from 1800+ sites (YouTube, Instagram, TikTok, etc.)
             - Beautiful Fluent UI design
-            - High quality video downloads
-          releaseDraft: true
+            - High quality video downloads up to 4K
+            - Audio extraction support
+
+            ### Installation
+            Download the `.exe` installer below and run it.
+          releaseDraft: false
           prerelease: false
           args: ${{ matrix.args }}
 
   build-only:
-    if: github.event_name == 'pull_request' || (github.event_name == 'push' && !startsWith(github.ref, 'refs/tags/'))
+    if: "!startsWith(github.ref, 'refs/tags/')"
     strategy:
       fail-fast: false
       matrix:
@@ -86,10 +94,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
 
       - name: Install Rust stable
-        uses: dtolnay/rust-action@stable
+        uses: dtolnay/rust-toolchain@stable
 
       - name: Rust cache
         uses: Swatinem/rust-cache@v2
@@ -97,14 +104,13 @@ jobs:
           workspaces: './src-tauri -> target'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Create resources directory
-        run: mkdir -p src-tauri/resources
-        shell: bash
+        run: mkdir src-tauri/resources
+        shell: pwsh
 
       - name: Install yt-dlp (Windows)
-        if: matrix.platform == 'windows-latest'
         run: |
           Invoke-WebRequest -Uri "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe" -OutFile "src-tauri/resources/yt-dlp.exe"
         shell: pwsh
@@ -113,10 +119,9 @@ jobs:
         run: npm run build
 
       - name: Build Tauri app
-        run: npm run tauri build -- ${{ matrix.args }}
+        run: npm run tauri build
 
       - name: Upload artifact (Windows)
-        if: matrix.platform == 'windows-latest'
         uses: actions/upload-artifact@v4
         with:
           name: windows-installer
