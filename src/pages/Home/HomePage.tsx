@@ -190,16 +190,24 @@ export default function HomePage() {
       }>('download-progress', (event) => {
         const { id, progress, speed, eta, status, downloaded_size, total_size } = event.payload;
 
+        console.log('[Progress Event]', { id, progress, speed, status });
+
         // Update download in store with all fields
         const store = useDownloadStore.getState();
-        store.updateDownload(id, {
-          progress,
-          speed,
-          eta,
-          downloadedSize: downloaded_size,
-          size: total_size || undefined,
-          status: status as any,
-        });
+        const existingDownload = store.downloads.find(d => d.id === id);
+
+        if (existingDownload) {
+          store.updateDownload(id, {
+            progress: Math.max(0, Math.min(100, progress)),
+            speed: speed || existingDownload.speed,
+            eta: eta || existingDownload.eta,
+            downloadedSize: downloaded_size || existingDownload.downloadedSize,
+            size: total_size || existingDownload.size,
+            status: (status === 'completed' ? 'completed' : status === 'downloading' ? 'downloading' : existingDownload.status) as any,
+          });
+        } else {
+          console.warn('[Progress] Download not found:', id);
+        }
       });
 
       const completeUnlisten = await listen<{ id: string; success: boolean }>('download-complete', (event) => {
@@ -310,15 +318,18 @@ export default function HomePage() {
       const platform = videoInfo.platform.toLowerCase();
       const platformColor = platformColors[platform] || '#6067D6';
 
+      // Generate ID first, then use it for both frontend and backend
+      const downloadId = crypto.randomUUID();
+
       const newDownload: DownloadItem = {
-        id: `${Date.now()}`,
+        id: downloadId,
         title: videoInfo.title,
         channel: videoInfo.channel,
         thumbnail: videoInfo.thumbnail,
         duration: videoInfo.duration,
         status: 'downloading',
         progress: 0,
-        speed: '',
+        speed: 'Starting...',
         eta: '',
         size: format.size,
         downloadedSize: '0 MB',
@@ -340,10 +351,12 @@ export default function HomePage() {
           error?: string;
         }
 
+        // Pass our generated ID to backend so it uses the same ID
         const response = await invoke<DownloadResponse>('start_download', {
           url: currentUrl,
           formatId,
           outputPath: path,
+          downloadId: downloadId,  // Pass our ID to backend
           options: {
             embed_metadata: embedMetadata,
             embed_thumbnail: embedThumbnail,
@@ -354,15 +367,12 @@ export default function HomePage() {
           },
         });
 
-        // Update the download ID to match backend's ID
-        if (response.success && response.download_id) {
-          updateDownloadId(newDownload.id, response.download_id);
-        } else if (!response.success) {
-          updateStatus(newDownload.id, 'error');
+        if (!response.success) {
+          updateStatus(downloadId, 'error');
         }
       } catch (error) {
         console.error('Failed to start download:', error);
-        updateStatus(newDownload.id, 'error');
+        updateStatus(downloadId, 'error');
       }
     },
     [videoInfo, currentUrl, addDownload, downloadPath, embedMetadata, embedThumbnail, updateDownloadId, updateStatus]

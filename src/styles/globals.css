@@ -263,3 +263,142 @@ body[dir="rtl"] {
 [data-tauri-drag-region] a {
   -webkit-app-region: no-drag;
 }
+
+/* ========================================
+   Fluent UI Overrides for Dark Theme
+   ======================================== */
+
+/* Fix Fluent UI Dropdown */
+.fui-Dropdown {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  color: #FFFFFF !important;
+}
+
+.fui-Dropdown:hover {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(96, 103, 214, 0.5) !important;
+}
+
+.fui-Listbox {
+  background-color: #1A1B26 !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.fui-Option {
+  color: #FFFFFF !important;
+}
+
+.fui-Option:hover {
+  background-color: rgba(96, 103, 214, 0.2) !important;
+}
+
+.fui-Option[aria-selected="true"] {
+  background-color: rgba(96, 103, 214, 0.3) !important;
+}
+
+/* Fix Fluent UI Switch */
+.fui-Switch {
+  --colorNeutralBackground1: rgba(255, 255, 255, 0.1) !important;
+  --colorBrandBackground: #6067D6 !important;
+}
+
+.fui-Switch__indicator {
+  background-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.fui-Switch[aria-checked="true"] .fui-Switch__indicator {
+  background-color: #6067D6 !important;
+}
+
+/* Fix Fluent UI Input */
+.fui-Input {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  color: #FFFFFF !important;
+}
+
+.fui-Input:hover {
+  border-color: rgba(96, 103, 214, 0.5) !important;
+}
+
+.fui-Input:focus-within {
+  border-color: #6067D6 !important;
+}
+
+/* Fix Fluent UI Button */
+.fui-Button--primary {
+  background-color: #6067D6 !important;
+  color: #FFFFFF !important;
+}
+
+.fui-Button--primary:hover {
+  background-color: #7078E8 !important;
+}
+
+.fui-Button--subtle {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.fui-Button--subtle:hover {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  color: #FFFFFF !important;
+}
+
+/* Fix Fluent UI Progress Bar */
+.fui-ProgressBar {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.fui-ProgressBar__bar {
+  background-color: #6067D6 !important;
+}
+
+/* Fix Fluent UI Tooltip - prevent white background */
+.fui-Tooltip {
+  background-color: #1A1B26 !important;
+  color: #FFFFFF !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Fix any Fluent popover/portal backgrounds */
+.fui-PopoverSurface,
+.fui-MenuPopover,
+.fui-DialogSurface {
+  background-color: #1A1B26 !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Fix Fluent Menu items */
+.fui-MenuItem {
+  color: #FFFFFF !important;
+}
+
+.fui-MenuItem:hover {
+  background-color: rgba(96, 103, 214, 0.2) !important;
+}
+
+/* ========================================
+   Sidebar Navigation Styles
+   ======================================== */
+
+/* Sidebar nav button hover - NEVER show white */
+nav button {
+  transition: all 0.2s ease !important;
+}
+
+nav button:hover {
+  background-color: rgba(96, 103, 214, 0.15) !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+nav button:active {
+  background-color: rgba(96, 103, 214, 0.25) !important;
+}
+
+/* Override any Fluent UI default button hover states in nav */
+nav .fui-Button:hover,
+nav button:hover {
+  background-color: rgba(96, 103, 214, 0.15) !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+}

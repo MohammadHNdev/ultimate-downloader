@@ -47,9 +47,11 @@ async fn start_download(
     url: String,
     format_id: String,
     output_path: String,
+    download_id: Option<String>,  // Accept ID from frontend
     options: DownloadOptions,
 ) -> Result<DownloadResponse, String> {
-    let download_id = uuid::Uuid::new_v4().to_string();
+    // Use provided ID or generate new one
+    let download_id = download_id.unwrap_or_else(|| uuid::Uuid::new_v4().to_string());
     let download_id_clone = download_id.clone();
     let app_for_callback = app.clone();
     let app_for_result = app.clone();
