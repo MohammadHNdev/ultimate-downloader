@@ -387,7 +387,7 @@ export default function SettingsPage() {
           <div style={styles.versionInfo}>
             <CheckmarkCircle24Regular style={{ color: '#4ADE80' }} />
             <div style={styles.versionText}>
-              <Text style={styles.versionNumber}>{t('settings.sections.about.version')} v1.4.1</Text>
+              <Text style={styles.versionNumber}>{t('settings.sections.about.version')} v1.4.2</Text>
               <Text style={styles.versionLabel}>{t('settings.sections.about.latestVersion')}</Text>
             </div>
             <Button style={styles.checkUpdateBtn} appearance="subtle">

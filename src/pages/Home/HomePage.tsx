@@ -352,11 +352,12 @@ export default function HomePage() {
         }
 
         // Pass our generated ID to backend so it uses the same ID
+        // IMPORTANT: Tauri expects snake_case parameter names!
         const response = await invoke<DownloadResponse>('start_download', {
           url: currentUrl,
-          formatId,
-          outputPath: path,
-          downloadId: downloadId,  // Pass our ID to backend
+          format_id: formatId,
+          output_path: path,
+          download_id: downloadId,  // Pass our ID to backend (snake_case!)
           options: {
             embed_metadata: embedMetadata,
             embed_thumbnail: embedThumbnail,
