@@ -1,0 +1,20 @@
+{
+  "$schema": "https://schema.tauri.app/capabilities/0",
+  "identifier": "default",
+  "description": "Default capabilities for the main window",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "core:window:allow-close",
+    "core:window:allow-minimize",
+    "core:window:allow-maximize",
+    "core:window:allow-unmaximize",
+    "core:window:allow-is-maximized",
+    "core:window:allow-start-dragging",
+    "core:event:default",
+    "dialog:default",
+    "fs:default",
+    "notification:default",
+    "shell:default"
+  ]
+}

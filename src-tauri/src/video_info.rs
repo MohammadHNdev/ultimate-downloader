@@ -125,14 +125,17 @@ pub async fn fetch_info(url: &str) -> Result<VideoInfo, Box<dyn std::error::Erro
         })
         .unwrap_or_default();
 
-    // Parse formats
-    let formats: Vec<FormatInfo> = info
+    // Parse formats - filter, deduplicate, and sort by quality
+    let mut formats: Vec<FormatInfo> = info
         .formats
         .unwrap_or_default()
         .into_iter()
         .filter(|f| {
             // Filter out storyboard and other non-media formats
-            f.vcodec.as_deref() != Some("none") || f.acodec.as_deref() != Some("none")
+            let has_video = f.vcodec.as_deref() != Some("none") && f.vcodec.is_some();
+            let has_audio = f.acodec.as_deref() != Some("none") && f.acodec.is_some();
+            // Only include formats with video OR audio-only formats
+            has_video || has_audio
         })
         .map(|f| {
             let has_video = f.vcodec.as_deref() != Some("none") && f.vcodec.is_some();
@@ -186,6 +189,42 @@ pub async fn fetch_info(url: &str) -> Result<VideoInfo, Box<dyn std::error::Erro
             }
         })
         .collect();
+
+    // Sort formats: video formats by height (desc), then audio by bitrate (desc)
+    formats.sort_by(|a, b| {
+        // Video formats first, then audio
+        match (a.has_video, b.has_video) {
+            (true, false) => std::cmp::Ordering::Less,
+            (false, true) => std::cmp::Ordering::Greater,
+            _ => {
+                // Compare by filesize if both have it
+                let size_a = a.filesize.or(a.filesize_approx).unwrap_or(0);
+                let size_b = b.filesize.or(b.filesize_approx).unwrap_or(0);
+                size_b.cmp(&size_a) // Descending
+            }
+        }
+    });
+
+    // Deduplicate by quality_label - keep the one with the best filesize info
+    let mut seen_qualities = std::collections::HashSet::new();
+    formats.retain(|f| {
+        if seen_qualities.contains(&f.quality_label) {
+            false
+        } else {
+            seen_qualities.insert(f.quality_label.clone());
+            true
+        }
+    });
+
+    // Add "Best" option at the beginning for video
+    if formats.iter().any(|f| f.has_video) {
+        let best_video = formats.iter().find(|f| f.has_video).cloned();
+        if let Some(mut best) = best_video {
+            best.format_id = "bestvideo+bestaudio/best".to_string();
+            best.quality_label = "Best Quality".to_string();
+            formats.insert(0, best);
+        }
+    }
 
     // Calculate duration string if not provided
     let duration = info.duration.unwrap_or(0.0) as u64;
