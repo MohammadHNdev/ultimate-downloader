@@ -1,0 +1,80 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Ultimate Downloader",
+  "version": "1.0.0",
+  "identifier": "com.ultimate-downloader.app",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [
+      {
+        "title": "Ultimate Downloader",
+        "width": 1200,
+        "height": 800,
+        "minWidth": 900,
+        "minHeight": 600,
+        "resizable": true,
+        "fullscreen": false,
+        "center": true,
+        "decorations": false,
+        "transparent": false,
+        "shadow": true
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["msi", "nsis"],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "resources": ["resources/*"],
+    "windows": {
+      "certificateThumbprint": null,
+      "digestAlgorithm": "sha256",
+      "timestampUrl": "",
+      "nsis": {
+        "displayLanguageSelector": false,
+        "installerIcon": "icons/icon.ico",
+        "languages": ["English"],
+        "shortcutName": "Ultimate Downloader"
+      }
+    }
+  },
+  "plugins": {
+    "shell": {
+      "all": true,
+      "execute": true,
+      "sidecar": true,
+      "scope": [
+        {
+          "name": "yt-dlp",
+          "cmd": "yt-dlp",
+          "args": true
+        }
+      ]
+    },
+    "fs": {
+      "all": true,
+      "scope": ["$HOME/**", "$DOWNLOAD/**", "$DOCUMENT/**"]
+    },
+    "dialog": {
+      "all": true
+    },
+    "notification": {
+      "all": true
+    }
+  }
+}
