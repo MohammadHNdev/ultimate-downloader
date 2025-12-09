@@ -51,26 +51,7 @@
   },
   "plugins": {
     "shell": {
-      "all": true,
-      "execute": true,
-      "sidecar": true,
-      "scope": [
-        {
-          "name": "yt-dlp",
-          "cmd": "yt-dlp",
-          "args": true
-        }
-      ]
-    },
-    "fs": {
-      "all": true,
-      "scope": ["$HOME/**", "$DOWNLOAD/**", "$DOCUMENT/**"]
-    },
-    "dialog": {
-      "all": true
-    },
-    "notification": {
-      "all": true
+      "open": true
     }
   }
 }
