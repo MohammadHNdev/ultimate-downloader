@@ -3,19 +3,16 @@ import {
   makeStyles,
   Text,
   Input,
-  Button,
   Dropdown,
   Option,
 } from '@fluentui/react-components';
 import {
   Search24Regular,
-  Filter24Regular,
   Grid24Regular,
   List24Regular,
   Play24Filled,
   Folder24Regular,
   Delete24Regular,
-  MoreHorizontal24Regular,
 } from '@fluentui/react-icons';
 import { motion, AnimatePresence } from 'framer-motion';
 

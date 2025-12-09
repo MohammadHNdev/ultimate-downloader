@@ -11,7 +11,7 @@ import { motion } from 'framer-motion';
 
 const useStyles = makeStyles({
   root: {
-    position: 'relative',
+    position: 'relative' as const,
     display: 'flex',
     gap: '16px',
     padding: '16px',

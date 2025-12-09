@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { makeStyles, tokens } from '@fluentui/react-components';
+import { makeStyles } from '@fluentui/react-components';
 import { motion } from 'framer-motion';
 import TitleBar from '../TitleBar/TitleBar';
 import Sidebar from '../Sidebar/Sidebar';

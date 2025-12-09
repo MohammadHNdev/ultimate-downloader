@@ -5,7 +5,6 @@ import URLInput from '../../components/URLInput/URLInput';
 import DownloadCard, { DownloadItem } from '../../components/DownloadCard/DownloadCard';
 import VideoPreviewModal, {
   VideoInfo,
-  FormatOption,
 } from '../../components/VideoPreview/VideoPreviewModal';
 import { useDownloadStore } from '../../stores/downloadStore';
 
@@ -166,7 +165,7 @@ export default function HomePage() {
   const { downloads, addDownload, pauseDownload, resumeDownload, cancelDownload } =
     useDownloadStore();
 
-  const handleURLSubmit = useCallback(async (url: string) => {
+  const handleURLSubmit = useCallback(async (_url: string) => {
     setIsLoading(true);
     // Simulate API call to fetch video info
     setTimeout(() => {
@@ -177,7 +176,7 @@ export default function HomePage() {
   }, []);
 
   const handleDownload = useCallback(
-    (formatId: string, options: { downloadSubtitles: boolean; downloadThumbnail: boolean; audioOnly: boolean }) => {
+    (formatId: string, _options: { downloadSubtitles: boolean; downloadThumbnail: boolean; audioOnly: boolean }) => {
       if (!videoInfo) return;
 
       const format = videoInfo.formats.find((f) => f.id === formatId);

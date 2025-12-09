@@ -11,7 +11,6 @@ import {
 import {
   Folder24Regular,
   ArrowDownload24Regular,
-  Globe24Regular,
   Color24Regular,
   Info24Regular,
   CheckmarkCircle24Regular,
