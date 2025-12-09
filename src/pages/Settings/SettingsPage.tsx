@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect } from 'react';
 import {
   Text,
   Switch,
@@ -15,6 +15,7 @@ import {
   CheckmarkCircle24Regular,
 } from '@fluentui/react-icons';
 import { motion } from 'framer-motion';
+import { useSettingsStore, QualityOption, ThemeOption } from '../../stores/settingsStore';
 
 const styles = {
   root: {
@@ -137,18 +138,41 @@ const styles = {
   },
 };
 
-type QualityOption = 'best' | '1080p' | '720p' | '480p';
-type ThemeOption = 'dark' | 'light' | 'system';
-
 export default function SettingsPage() {
-  const [downloadPath, setDownloadPath] = useState('/Users/Downloads');
-  const [defaultQuality, setDefaultQuality] = useState<QualityOption>('best');
-  const [theme, setTheme] = useState<ThemeOption>('dark');
-  const [autoUpdate, setAutoUpdate] = useState(true);
-  const [notifications, setNotifications] = useState(true);
-  const [simultaneousDownloads, setSimultaneousDownloads] = useState('3');
-  const [embedMetadata, setEmbedMetadata] = useState(true);
-  const [embedThumbnail, setEmbedThumbnail] = useState(true);
+  const {
+    downloadPath,
+    defaultQuality,
+    theme,
+    autoUpdate,
+    notifications,
+    simultaneousDownloads,
+    embedMetadata,
+    embedThumbnail,
+    setDownloadPath,
+    setDefaultQuality,
+    setTheme,
+    setAutoUpdate,
+    setNotifications,
+    setSimultaneousDownloads,
+    setEmbedMetadata,
+    setEmbedThumbnail,
+  } = useSettingsStore();
+
+  // Get default download path on mount
+  useEffect(() => {
+    const getDefaultPath = async () => {
+      if (!downloadPath) {
+        try {
+          const { invoke } = await import('@tauri-apps/api/core');
+          const path = await invoke<string>('get_default_download_path');
+          setDownloadPath(path);
+        } catch (error) {
+          console.error('Failed to get default download path:', error);
+        }
+      }
+    };
+    getDefaultPath();
+  }, [downloadPath, setDownloadPath]);
 
   const handleBrowse = async () => {
     try {
@@ -156,6 +180,7 @@ export default function SettingsPage() {
       const selected = await open({
         directory: true,
         multiple: false,
+        defaultPath: downloadPath || undefined,
       });
       if (selected) {
         setDownloadPath(selected as string);
@@ -211,7 +236,7 @@ export default function SettingsPage() {
                 onChange={(_, data) => setDownloadPath(data.value)}
                 style={{ flex: 1 }}
               />
-              <Button onClick={handleBrowse}>Browse</Button>
+              <Button onClick={handleBrowse} appearance="primary">Browse</Button>
             </div>
           </div>
         </motion.div>
@@ -263,9 +288,9 @@ export default function SettingsPage() {
             </div>
             <Dropdown
               style={styles.settingControl}
-              value={simultaneousDownloads}
-              selectedOptions={[simultaneousDownloads]}
-              onOptionSelect={(_, data) => setSimultaneousDownloads(data.optionValue as string)}
+              value={String(simultaneousDownloads)}
+              selectedOptions={[String(simultaneousDownloads)]}
+              onOptionSelect={(_, data) => setSimultaneousDownloads(Number(data.optionValue))}
             >
               <Option value="1">1</Option>
               <Option value="2">2</Option>

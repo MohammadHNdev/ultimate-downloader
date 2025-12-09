@@ -6,6 +6,7 @@ import {
   Folder20Regular,
   CheckmarkCircle20Filled,
   ErrorCircle20Regular,
+  ArrowSync20Regular,
 } from '@fluentui/react-icons';
 import { motion } from 'framer-motion';
 
@@ -182,8 +183,9 @@ export default function DownloadCard({
             <motion.span
               animate={{ rotate: 360 }}
               transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+              style={{ display: 'flex' }}
             >
-              ⟳
+              <ArrowSync20Regular />
             </motion.span>
             Downloading
           </span>

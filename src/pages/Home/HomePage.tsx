@@ -1,5 +1,14 @@
 import { useState, useCallback } from 'react';
 import { Text } from '@fluentui/react-components';
+import {
+  Video24Regular,
+  Camera24Regular,
+  MusicNote224Regular,
+  Chat24Regular,
+  People24Regular,
+  Film24Regular,
+  ArrowDownload24Regular,
+} from '@fluentui/react-icons';
 import { motion, AnimatePresence } from 'framer-motion';
 import URLInput from '../../components/URLInput/URLInput';
 import DownloadCard, { DownloadItem } from '../../components/DownloadCard/DownloadCard';
@@ -122,12 +131,12 @@ const styles = {
 };
 
 const platforms = [
-  { name: 'YouTube', icon: '▶️', color: '#FF0000' },
-  { name: 'Instagram', icon: '📷', color: '#E4405F' },
-  { name: 'TikTok', icon: '🎵', color: '#00F2EA' },
-  { name: 'Twitter', icon: '🐦', color: '#1DA1F2' },
-  { name: 'Facebook', icon: '📘', color: '#1877F2' },
-  { name: 'Vimeo', icon: '🎬', color: '#1AB7EA' },
+  { name: 'YouTube', icon: <Video24Regular />, color: '#FF0000' },
+  { name: 'Instagram', icon: <Camera24Regular />, color: '#E4405F' },
+  { name: 'TikTok', icon: <MusicNote224Regular />, color: '#00F2EA' },
+  { name: 'Twitter', icon: <Chat24Regular />, color: '#1DA1F2' },
+  { name: 'Facebook', icon: <People24Regular />, color: '#1877F2' },
+  { name: 'Vimeo', icon: <Film24Regular />, color: '#1AB7EA' },
 ];
 
 // Mock data for demonstration
@@ -303,8 +312,17 @@ export default function HomePage() {
                   onPause={() => pauseDownload(download.id)}
                   onResume={() => resumeDownload(download.id)}
                   onCancel={() => cancelDownload(download.id)}
-                  onOpenFolder={() => {
-                    // TODO: Open folder with Tauri
+                  onOpenFolder={async () => {
+                    try {
+                      const { open } = await import('@tauri-apps/plugin-shell');
+                      const { useSettingsStore } = await import('../../stores/settingsStore');
+                      const downloadPath = useSettingsStore.getState().downloadPath;
+                      if (downloadPath) {
+                        await open(downloadPath);
+                      }
+                    } catch (error) {
+                      console.error('Failed to open folder:', error);
+                    }
                   }}
                 />
               ))}
@@ -320,7 +338,7 @@ export default function HomePage() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
         >
-          <span style={styles.emptyIcon}>📥</span>
+          <ArrowDownload24Regular style={{ fontSize: '48px', opacity: 0.5 }} />
           <span style={styles.emptyText}>
             Your downloads will appear here. Paste a URL above to get started!
           </span>

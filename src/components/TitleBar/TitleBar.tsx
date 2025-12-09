@@ -3,6 +3,7 @@ import {
   Subtract20Regular,
   Square20Regular,
   Dismiss20Regular,
+  ArrowDownload24Filled,
 } from '@fluentui/react-icons';
 import { motion } from 'framer-motion';
 
@@ -95,7 +96,7 @@ export default function TitleBar() {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            ⬇
+            <ArrowDownload24Filled style={{ fontSize: '16px' }} />
           </motion.div>
           <Text style={styles.title}>Ultimate Downloader</Text>
         </div>

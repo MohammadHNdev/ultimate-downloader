@@ -12,6 +12,7 @@ import {
   Play24Filled,
   Folder24Regular,
   Delete24Regular,
+  VideoClip24Regular,
 } from '@fluentui/react-icons';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -272,59 +273,7 @@ interface LibraryItem {
   platform: string;
 }
 
-// Mock data
-const mockLibrary: LibraryItem[] = [
-  {
-    id: '1',
-    title: 'Amazing Nature Documentary - Wildlife Adventures',
-    channel: 'Nature Channel',
-    thumbnail: 'https://picsum.photos/seed/1/400/225',
-    duration: '45:32',
-    size: '1.2 GB',
-    downloadedAt: '2024-01-15',
-    platform: 'YouTube',
-  },
-  {
-    id: '2',
-    title: 'Learn React in 2024 - Complete Tutorial',
-    channel: 'Code Academy',
-    thumbnail: 'https://picsum.photos/seed/2/400/225',
-    duration: '2:15:45',
-    size: '2.8 GB',
-    downloadedAt: '2024-01-14',
-    platform: 'YouTube',
-  },
-  {
-    id: '3',
-    title: 'Cooking Masterclass - Italian Cuisine',
-    channel: 'Chef Pro',
-    thumbnail: 'https://picsum.photos/seed/3/400/225',
-    duration: '32:18',
-    size: '850 MB',
-    downloadedAt: '2024-01-13',
-    platform: 'Vimeo',
-  },
-  {
-    id: '4',
-    title: 'Viral Dance Challenge Compilation',
-    channel: '@dancequeen',
-    thumbnail: 'https://picsum.photos/seed/4/400/225',
-    duration: '8:42',
-    size: '320 MB',
-    downloadedAt: '2024-01-12',
-    platform: 'TikTok',
-  },
-  {
-    id: '5',
-    title: 'Music Production Tips & Tricks',
-    channel: 'Beat Makers',
-    thumbnail: 'https://picsum.photos/seed/5/400/225',
-    duration: '18:55',
-    size: '520 MB',
-    downloadedAt: '2024-01-11',
-    platform: 'YouTube',
-  },
-];
+// Library starts empty - populated from actual downloads
 
 type ViewMode = 'grid' | 'list';
 type SortOption = 'newest' | 'oldest' | 'name' | 'size';
@@ -333,7 +282,7 @@ export default function LibraryPage() {
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('newest');
-  const [library] = useState<LibraryItem[]>(mockLibrary);
+  const [library] = useState<LibraryItem[]>([]);
 
   const filteredLibrary = library.filter(
     (item) =>
@@ -424,7 +373,7 @@ export default function LibraryPage() {
       <div style={styles.content}>
         {sortedLibrary.length === 0 ? (
           <div style={styles.emptyState}>
-            <span style={styles.emptyIcon}>📚</span>
+            <VideoClip24Regular style={{ fontSize: '64px', opacity: 0.5, color: 'rgba(255,255,255,0.4)' }} />
             <Text style={styles.emptyTitle}>Your library is empty</Text>
             <Text style={styles.emptyText}>
               Downloaded videos will appear here. Start downloading to build your collection!
