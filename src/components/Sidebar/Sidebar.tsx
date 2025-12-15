@@ -44,11 +44,11 @@ const styles = {
   },
   activeIndicator: {
     position: 'absolute' as const,
-    left: '-12px',
+    right: '-12px', // RTL: indicator on right
     width: '3px',
     height: '20px',
     backgroundColor: '#6067D6',
-    borderRadius: '0 4px 4px 0',
+    borderRadius: '4px 0 0 4px', // RTL: rounded on left
   },
   bottomSection: {
     display: 'flex',
@@ -131,7 +131,7 @@ export default function Sidebar() {
     <nav style={{
       ...styles.root,
       backgroundColor: tokens.colorNeutralBackground1,
-      borderRight: `1px solid ${tokens.colorNeutralStroke2}`,
+      borderLeft: `1px solid ${tokens.colorNeutralStroke2}`, // RTL: border on left
     }}>
       <div style={styles.navSection}>
         <NavItem

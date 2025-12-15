@@ -21,6 +21,7 @@ export default function Layout({ children }: LayoutProps) {
       <TitleBar />
       <div style={{
         display: 'flex',
+        flexDirection: 'row-reverse', // RTL: Sidebar on right
         flex: 1,
         overflow: 'hidden',
       }}>
