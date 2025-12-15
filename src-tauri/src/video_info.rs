@@ -17,19 +17,28 @@ fn get_ytdlp_path() -> PathBuf {
         .and_then(|p| p.parent().map(|p| p.to_path_buf()))
         .unwrap_or_default();
 
+    // Tauri 2.x resource paths - resources are copied to exe directory root
     let candidates = vec![
         exe_dir.join("yt-dlp.exe"),
         exe_dir.join("resources").join("yt-dlp.exe"),
+        // Also check _up_ directory for dev mode
+        exe_dir.parent().map(|p| p.join("resources").join("yt-dlp.exe")).unwrap_or_default(),
+        // Check current working directory
+        std::env::current_dir().ok().map(|p| p.join("yt-dlp.exe")).unwrap_or_default(),
+        std::env::current_dir().ok().map(|p| p.join("resources").join("yt-dlp.exe")).unwrap_or_default(),
+        // System PATH fallback
         PathBuf::from("yt-dlp.exe"),
         PathBuf::from("yt-dlp"),
     ];
 
-    for path in candidates {
-        if path.exists() {
-            return path;
+    for path in &candidates {
+        eprintln!("[get_ytdlp_path] Checking: {:?} exists={}", path, path.exists());
+        if path.exists() && !path.as_os_str().is_empty() {
+            return path.clone();
         }
     }
 
+    eprintln!("[get_ytdlp_path] No bundled yt-dlp found, falling back to PATH");
     PathBuf::from("yt-dlp")
 }
 

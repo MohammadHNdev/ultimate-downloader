@@ -197,8 +197,14 @@ export default function HomePage() {
 
       errorUnlisten = await listen<{ id: string; error: string }>('download-error', (event) => {
         const { id, error } = event.payload;
-        console.log('[Error Event]', { id, error });
-        useDownloadStore.getState().updateStatus(id, 'error');
+        console.error('[Error Event]', { id, error });
+        // Update both status and error message
+        const store = useDownloadStore.getState();
+        store.updateDownload(id, {
+          status: 'error',
+          progress: 0,
+          speed: '',
+        });
       });
     };
 

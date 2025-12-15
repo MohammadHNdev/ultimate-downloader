@@ -19,19 +19,28 @@ fn get_ytdlp_path() -> PathBuf {
         .and_then(|p| p.parent().map(|p| p.to_path_buf()))
         .unwrap_or_default();
 
+    // Tauri 2.x resource paths - resources are copied to exe directory root
     let candidates = vec![
         exe_dir.join("yt-dlp.exe"),
         exe_dir.join("resources").join("yt-dlp.exe"),
+        // Also check _up_ directory for dev mode
+        exe_dir.parent().map(|p| p.join("resources").join("yt-dlp.exe")).unwrap_or_default(),
+        // Check current working directory
+        std::env::current_dir().ok().map(|p| p.join("yt-dlp.exe")).unwrap_or_default(),
+        std::env::current_dir().ok().map(|p| p.join("resources").join("yt-dlp.exe")).unwrap_or_default(),
+        // System PATH fallback
         PathBuf::from("yt-dlp.exe"),
         PathBuf::from("yt-dlp"),
     ];
 
-    for path in candidates {
-        if path.exists() {
-            return path;
+    for path in &candidates {
+        eprintln!("[get_ytdlp_path] Checking: {:?} exists={}", path, path.exists());
+        if path.exists() && !path.as_os_str().is_empty() {
+            return path.clone();
         }
     }
 
+    eprintln!("[get_ytdlp_path] No bundled yt-dlp found, falling back to PATH");
     PathBuf::from("yt-dlp")
 }
 
@@ -42,19 +51,28 @@ fn get_ffmpeg_path() -> PathBuf {
         .and_then(|p| p.parent().map(|p| p.to_path_buf()))
         .unwrap_or_default();
 
+    // Tauri 2.x resource paths - resources are copied to exe directory root
     let candidates = vec![
         exe_dir.join("ffmpeg.exe"),
         exe_dir.join("resources").join("ffmpeg.exe"),
+        // Also check _up_ directory for dev mode
+        exe_dir.parent().map(|p| p.join("resources").join("ffmpeg.exe")).unwrap_or_default(),
+        // Check current working directory
+        std::env::current_dir().ok().map(|p| p.join("ffmpeg.exe")).unwrap_or_default(),
+        std::env::current_dir().ok().map(|p| p.join("resources").join("ffmpeg.exe")).unwrap_or_default(),
+        // System PATH fallback
         PathBuf::from("ffmpeg.exe"),
         PathBuf::from("ffmpeg"),
     ];
 
-    for path in candidates {
-        if path.exists() {
-            return path;
+    for path in &candidates {
+        eprintln!("[get_ffmpeg_path] Checking: {:?} exists={}", path, path.exists());
+        if path.exists() && !path.as_os_str().is_empty() {
+            return path.clone();
         }
     }
 
+    eprintln!("[get_ffmpeg_path] No bundled ffmpeg found, falling back to PATH");
     PathBuf::from("ffmpeg")
 }
 
@@ -376,6 +394,15 @@ where
         });
         Ok(download_id)
     } else {
-        Err("Download failed".into())
+        let exit_code = status.code().unwrap_or(-1);
+        let error_msg = match exit_code {
+            1 => "Download failed: Video may be private, age-restricted, or unavailable",
+            2 => "Download failed: Invalid URL or unsupported site",
+            100 => "Download failed: yt-dlp not found. Please reinstall the application",
+            101 => "Download failed: ffmpeg not found for merging video/audio",
+            _ => "Download failed: Unknown error occurred",
+        };
+        eprintln!("[download_video] Process exited with code: {}", exit_code);
+        Err(error_msg.into())
     }
 }

@@ -1,6 +1,6 @@
 [package]
 name = "ultimate-downloader"
-version = "1.6.1"
+version = "1.7.0"
 description = "Ultimate Video Downloader - Download from YouTube, Instagram, TikTok and 1800+ sites"
 authors = ["MohammadHNdev"]
 edition = "2021"
