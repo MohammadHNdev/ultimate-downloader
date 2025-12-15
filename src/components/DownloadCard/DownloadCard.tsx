@@ -158,6 +158,7 @@ export interface DownloadItem {
   platform: string;
   platformColor: string;
   error?: string;
+  filePath?: string;
 }
 
 interface DownloadCardProps {

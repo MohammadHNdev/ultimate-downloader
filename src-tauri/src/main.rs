@@ -127,6 +127,51 @@ async fn check_ytdlp_installed() -> bool {
     downloader::check_ytdlp_available().await
 }
 
+// Open file location in file explorer
+#[tauri::command]
+async fn open_file_location(path: String) -> Result<bool, String> {
+    use std::process::Command;
+
+    #[cfg(target_os = "windows")]
+    {
+        // On Windows, use explorer /select to highlight the file
+        let result = Command::new("explorer")
+            .arg("/select,")
+            .arg(&path)
+            .spawn();
+
+        match result {
+            Ok(_) => Ok(true),
+            Err(e) => Err(e.to_string()),
+        }
+    }
+
+    #[cfg(target_os = "macos")]
+    {
+        let result = Command::new("open")
+            .arg("-R")
+            .arg(&path)
+            .spawn();
+
+        match result {
+            Ok(_) => Ok(true),
+            Err(e) => Err(e.to_string()),
+        }
+    }
+
+    #[cfg(target_os = "linux")]
+    {
+        let result = Command::new("xdg-open")
+            .arg(std::path::Path::new(&path).parent().unwrap_or(std::path::Path::new(&path)))
+            .spawn();
+
+        match result {
+            Ok(_) => Ok(true),
+            Err(e) => Err(e.to_string()),
+        }
+    }
+}
+
 fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
@@ -139,6 +184,7 @@ fn main() {
             cancel_download,
             get_default_download_path,
             check_ytdlp_installed,
+            open_file_location,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -3,6 +3,7 @@ import { AnimatePresence } from 'framer-motion';
 import { FluentProvider } from '@fluentui/react-components';
 import Layout from './components/Layout/Layout';
 import HomePage from './pages/Home/HomePage';
+import DownloadsPage from './pages/Downloads/DownloadsPage';
 import SettingsPage from './pages/Settings/SettingsPage';
 import LibraryPage from './pages/Library/LibraryPage';
 import DonatePage from './pages/Donate/DonatePage';
@@ -36,8 +37,9 @@ function App() {
         <AnimatePresence mode="wait">
           <Routes>
             <Route path="/" element={<HomePage />} />
-            <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/downloads" element={<DownloadsPage />} />
             <Route path="/library" element={<LibraryPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
             <Route path="/donate" element={<DonatePage />} />
           </Routes>
         </AnimatePresence>
