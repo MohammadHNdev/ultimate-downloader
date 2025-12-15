@@ -126,9 +126,17 @@ export default function DonatePage() {
     const amount = customAmount ? parseInt(customAmount) : selectedAmount;
 
     // Open payment gateway via arvangram.ir proxy (handles CORS)
-    // This calls a PHP script that creates Zibal payment and redirects
     const paymentUrl = `https://arvangram.ir/donate/pay.php?amount=${amount}&merchant=${ZIBAL_MERCHANT}`;
-    window.open(paymentUrl, '_blank');
+
+    try {
+      // Use Tauri shell to open URL in default browser
+      const { open } = await import('@tauri-apps/plugin-shell');
+      await open(paymentUrl);
+    } catch (error) {
+      // Fallback to window.open
+      console.error('Failed to open with Tauri shell:', error);
+      window.open(paymentUrl, '_blank');
+    }
   };
 
   return (

@@ -334,19 +334,19 @@ export default function HomePage() {
         }
 
         // Pass our generated ID to backend so it uses the same ID
-        // IMPORTANT: Tauri expects snake_case parameter names!
+        // IMPORTANT: Tauri 2.x converts snake_case to camelCase automatically!
         const response = await invoke<DownloadResponse>('start_download', {
           url: currentUrl,
-          format_id: formatId,
-          output_path: path,
-          download_id: downloadId,  // Pass our ID to backend (snake_case!)
+          formatId: formatId,
+          outputPath: path,
+          downloadId: downloadId,
           options: {
-            embed_metadata: embedMetadata,
-            embed_thumbnail: embedThumbnail,
-            download_subtitles: options.downloadSubtitles,
-            subtitle_languages: null,
-            audio_only: options.audioOnly,
-            audio_format: options.audioOnly ? 'mp3' : null,
+            embedMetadata: embedMetadata,
+            embedThumbnail: embedThumbnail,
+            downloadSubtitles: options.downloadSubtitles,
+            subtitleLanguages: null,
+            audioOnly: options.audioOnly,
+            audioFormat: options.audioOnly ? 'mp3' : null,
           },
         });
 
