@@ -9,6 +9,8 @@ import {
   Library24Filled,
   ArrowDownload24Regular,
   ArrowDownload24Filled,
+  Heart24Regular,
+  Heart24Filled,
 } from '@fluentui/react-icons';
 
 const styles = {
@@ -157,6 +159,12 @@ export default function Sidebar() {
         ...styles.bottomSection,
         borderTop: `1px solid ${tokens.colorNeutralStroke2}`,
       }}>
+        <NavItem
+          icon={<Heart24Regular />}
+          activeIcon={<Heart24Filled />}
+          label="Donate"
+          path="/donate"
+        />
         <NavItem
           icon={<Settings24Regular />}
           activeIcon={<Settings24Filled />}
