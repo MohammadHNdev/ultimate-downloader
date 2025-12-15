@@ -38,7 +38,7 @@ const styles = {
     gap: '24px',
     flex: 1,
     overflow: 'auto' as const,
-    paddingRight: '8px',
+    paddingLeft: '8px', // RTL: padding on left for scrollbar on right
   },
   section: {
     display: 'flex',
@@ -304,7 +304,7 @@ export default function SettingsPage() {
           <div style={styles.versionInfo}>
             <CheckmarkCircle24Regular style={{ color: '#4ADE80' }} />
             <div style={styles.versionText}>
-              <Text style={{ fontSize: '14px', fontWeight: 600, color: tokens.colorNeutralForeground1 }}>{t('settings.sections.about.version')} v1.6.1</Text>
+              <Text style={{ fontSize: '14px', fontWeight: 600, color: tokens.colorNeutralForeground1 }}>{t('settings.sections.about.version')} v1.8.2</Text>
               <Text style={{ fontSize: '12px', color: tokens.colorNeutralForeground3 }}>{t('settings.sections.about.latestVersion')}</Text>
             </div>
           </div>

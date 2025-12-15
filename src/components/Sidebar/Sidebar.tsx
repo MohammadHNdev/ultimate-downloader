@@ -1,4 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { tokens } from '@fluentui/react-components';
 import {
   Home24Regular,
@@ -125,6 +126,7 @@ function NavItem({ icon, activeIcon, label, path, badge }: NavItemProps) {
 }
 
 export default function Sidebar() {
+  const { t } = useTranslation();
   const activeDownloads = 0;
 
   return (
@@ -137,20 +139,20 @@ export default function Sidebar() {
         <NavItem
           icon={<Home24Regular />}
           activeIcon={<Home24Filled />}
-          label="Home"
+          label={t('nav.home')}
           path="/"
         />
         <NavItem
           icon={<ArrowDownload24Regular />}
           activeIcon={<ArrowDownload24Filled />}
-          label="Downloads"
+          label={t('nav.downloads')}
           path="/downloads"
           badge={activeDownloads}
         />
         <NavItem
           icon={<Library24Regular />}
           activeIcon={<Library24Filled />}
-          label="Library"
+          label={t('nav.library')}
           path="/library"
         />
       </div>
@@ -162,13 +164,13 @@ export default function Sidebar() {
         <NavItem
           icon={<Heart24Regular />}
           activeIcon={<Heart24Filled />}
-          label="Donate"
+          label={t('nav.donate')}
           path="/donate"
         />
         <NavItem
           icon={<Settings24Regular />}
           activeIcon={<Settings24Filled />}
-          label="Settings"
+          label={t('nav.settings')}
           path="/settings"
         />
       </div>
